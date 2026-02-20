@@ -41,43 +41,24 @@ game.drawZombie = function(enemy) {
 };
 
 game.drawSkeleton = function(enemy) {
-    // Draw goblin using GoblinWalk.png sprite via sprite system, fallback to green circle if not loaded
-    const spriteData = game.sprites && game.sprites['goblin'];
+    // Draw goblin using GoblinWalk.png sprite, fallback to circle if not loaded
+    if (!game.goblinSprite) {
+        game.goblinSprite = new Image();
+        game.goblinSprite.src = 'images/sprites/GoblinWalk.png';
+    }
+    const spriteSize = 32;
+    const drawSize = enemy.radius * 2;
     ctx.save();
     ctx.translate(enemy.x, enemy.y);
-    if (spriteData && spriteData.loaded) {
-        // Make sprite much bigger
-        const scale = 2.5; // 2.5x normal size
-        const drawSize = enemy.radius * 2 * scale;
-        // Add a strong glow effect
-        ctx.shadowBlur = 32;
-        ctx.shadowColor = '#ffffff';
-        ctx.globalAlpha = 1;
-        // Optionally, brighten the sprite by drawing a white rectangle behind it
-        ctx.save();
-        ctx.globalAlpha = 0.7;
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.arc(0, 0, drawSize * 0.52, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-        ctx.globalAlpha = 1;
+    if (game.goblinSprite.complete && game.goblinSprite.naturalWidth > 0) {
         ctx.drawImage(
-            spriteData.image,
-            0, 0, spriteData.frameWidth, spriteData.frameHeight,
-            -drawSize/2, -drawSize/2, drawSize, drawSize
+            game.goblinSprite,
+            0, 0, spriteSize, spriteSize, // source
+            -drawSize/2, -drawSize/2, drawSize, drawSize // destination
         );
-        ctx.shadowBlur = 0;
     } else {
-        ctx.fillStyle = '#aaff77'; // much brighter fallback color
-        ctx.shadowBlur = 24;
-        ctx.shadowColor = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(0, 0, enemy.radius * 2.2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-    }
-    ctx.restore();
+        // Fallback: draw a green circle
+        ctx.fillStyle = enemy.color || '#339933';
         ctx.beginPath();
         ctx.arc(0, 0, enemy.radius, 0, Math.PI * 2);
         ctx.fill();
@@ -551,23 +532,21 @@ game.drawVampire = function(enemy) {
 };
 
 game.drawGoblin = function(enemy) {
-    // Draw goblin using GoblinWalk.png sprite via sprite system, fallback to green circle if not loaded
-    const spriteData = game.sprites && game.sprites['goblin'];
+    // Draw goblin using GoblinWalk.png sprite
+    if (!game.goblinSprite) {
+        game.goblinSprite = new Image();
+        game.goblinSprite.src = 'images/sprites/GoblinWalk.png';
+    }
+    // Default to 32x32 sprite size, scale to enemy.radius
+    const spriteSize = 32;
+    const drawSize = enemy.radius * 2;
     ctx.save();
     ctx.translate(enemy.x, enemy.y);
-    if (spriteData && spriteData.loaded) {
-        const drawSize = enemy.radius * 2;
-        ctx.drawImage(
-            spriteData.image,
-            0, 0, spriteData.frameWidth, spriteData.frameHeight,
-            -drawSize/2, -drawSize/2, drawSize, drawSize
-        );
-    } else {
-        ctx.fillStyle = enemy.color || '#339933';
-        ctx.beginPath();
-        ctx.arc(0, 0, enemy.radius, 0, Math.PI * 2);
-        ctx.fill();
-    }
+    ctx.drawImage(
+        game.goblinSprite,
+        0, 0, spriteSize, spriteSize, // source
+        -drawSize/2, -drawSize/2, drawSize, drawSize // destination
+    );
     ctx.restore();
 };
 
