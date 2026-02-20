@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <title>Survivor Roguelike</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    
+    <!-- Pause Button -->
+    <button class="pause-button" id="pauseButton">⏸</button>
+    
+    <!-- Background Music 1 -->
+    <audio id="bgMusic" preload="auto">
+        <source src="audio/Endless_Waves.mp3" type="audio/mpeg">
+        Your browser does not support audio playback.
+    </audio>
+    
+    <!-- Background Music 2 -->
+    <audio id="bgMusic2" preload="auto">
+        <source src="audio/Chill_Cozy.mp3" type="audio/mpeg">
+        Your browser does not support audio playback.
+    </audio>
+    
+    <!-- Boss Music 1 -->
+    <audio id="bossMusic" loop preload="auto">
+        <source src="audio/Crimson_Last_Stand.mp3" type="audio/mpeg">
+        Your browser does not support audio playback.
+    </audio>
+    
+    <!-- Boss Music 2 -->
+    <audio id="bossMusic2" loop preload="auto">
+        <source src="audio/Endless_Boss_Waves.mp3" type="audio/mpeg">
+        Your browser does not support audio playback.
+    </audio>
+    
+    <!-- Level Up Sound -->
+    <audio id="levelUpSound" preload="auto">
+        <source src="audio/level_up.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- Shoot Sound -->
+    <audio id="shootSound" preload="auto">
+        <source src="audio/shoot.mp3" type="audio/mpeg">
+    </audio>
+    
+    <div class="start-screen" id="startScreen">
+        <div class="start-title">SURVIVOR PROTOCOL</div>
+        <div class="start-subtitle">WASD/Arrow Keys to Move • Auto-Shoot • Survive!</div>
+        <div class="start-stats">
+            <div>Total True XP: <span id="startTrueXP">0</span></div>
+            <div style="font-size: 16px; margin-top: 10px; color: #00ffff;">Skills Unlocked: <span id="startSkillsUnlocked">0</span></div>
+        </div>
+        <div id="characterSelectionContainer"></div>
+        <div class="start-buttons">
+            <button class="button" onclick="game.startStoryMode()">📖 Story Mode (Lvl <span id="storyProgressDisplay">1</span>)</button>
+            <button class="button" onclick="game.startGame()">♾️ Endless Mode</button>
+            <button class="button" onclick="game.startBossRush()">💀 Boss Rush</button>
+            <button class="button" onclick="game.showRaidBoss()">👹 Weekly Raid Boss</button>
+            <button class="button" onclick="game.showLeaderboard()">🏅 Leaderboard</button>
+            <button class="button" onclick="game.showRunHistory()">📊 Run History</button>
+            <button class="button" onclick="game.showSkillTreeFromStart()">🌟 Skill Tree</button>
+            <button class="button" onclick="game.showRelicStorage()">💎 Relics</button>
+            <button class="button" onclick="game.showRelicFilter()">🎯 Relic Filter</button>
+            <button class="button" onclick="game.showAchievements()">🏆 Achievements</button>
+            <button class="button" onclick="game.showBestiary()">📖 Bestiary</button>
+            <button class="button" onclick="game.showAudioSettings()">🔊 Audio Settings</button>
+            <button class="button" onclick="game.showCredits()">📜 Credits</button>
+            <button class="button reset-button" onclick="game.confirmReset()">🔄 Reset All Progress</button>
+            <button class="button" onclick="game.startTestZone()">🧪 Test Zone</button>
+        </div>
+        <div class="daily-challenge-banner" id="dailyChallengeBanner" style="display: none;">
+            <div class="daily-title">⚔️ DAILY CHALLENGE</div>
+            <div class="daily-name" id="dailyChallengeName"></div>
+            <div class="daily-desc" id="dailyChallengeDesc"></div>
+            <button class="button daily-start" onclick="game.startDailyChallenge()">Start Challenge</button>
+        </div>
+    </div>
+    
+    <div class="hud" style="display: none;" id="hud">
+        <div class="hud-item">
+            <div>HP: <span id="hpText">100</span></div>
+            <div class="hud-bar">
+                <div class="hud-bar-fill" id="hpBar" style="width: 100%;"></div>
+            </div>
+        </div>
+        <div class="hud-item">
+            <div>XP: <span id="xpText">0</span> / <span id="xpNeeded">10</span></div>
+            <div class="hud-bar">
+                <div class="hud-bar-fill" id="xpBar" style="width: 0%;"></div>
+            </div>
+        </div>
+        <div class="hud-item">Lvl: <span id="levelText">1</span> <span id="storyLevelText" style="color:#ffaa00; display:none;"></span></div>
+        <div class="hud-item">Time: <span id="timeText">0:00</span></div>
+        <div class="hud-item">Kills: <span id="killsText">0</span></div>
+    </div>
+    
+    <!-- Story Mode Objective HUD -->
+    <div class="objective-hud" id="objectiveHud" style="display: none;">
+        <div class="objective-title">🎯 OBJECTIVE</div>
+        <div class="objective-item" id="objectiveEnemies">
+            <span class="objective-icon">👾</span>
+            <span>Enemies: <span id="objectiveEnemiesCount">0</span>/<span id="objectiveEnemiesTotal">0</span></span>
+            <div class="objective-bar">
+                <div class="objective-bar-fill" id="objectiveEnemiesBar" style="width: 0%;"></div>
+            </div>
+        </div>
+        <div class="objective-item" id="objectiveBosses" style="display: none;">
+            <span class="objective-icon">💀</span>
+            <span>Boss: <span id="objectiveBossesCount">0</span>/<span id="objectiveBossesTotal">0</span></span>
+            <div class="objective-bar boss-bar">
+                <div class="objective-bar-fill boss-fill" id="objectiveBossesBar" style="width: 0%;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Daily Challenge Progress HUD -->
+    <div class="daily-challenge-hud" id="dailyChallengeHud" style="display: none;">
+        <div class="daily-hud-title">⚔️ DAILY CHALLENGE</div>
+        <div class="daily-hud-name" id="dailyHudName"></div>
+        <div class="daily-hud-progress">
+            <span id="dailyHudProgressText">0/0</span>
+            <span id="dailyHudExtra"></span>
+        </div>
+        <div class="daily-hud-bar">
+            <div class="daily-hud-bar-fill" id="dailyHudBar" style="width: 0%;"></div>
+        </div>
+        <div class="daily-hud-reward">
+            <span class="reward-icon">💎</span>
+            <span id="dailyHudReward">Reward: Relic</span>
+        </div>
+    </div>
+    
+    <div id="bossHealthContainer" style="display: none;" class="boss-health-bar">
+        <div class="boss-name" id="bossName">BOSS</div>
+        <div class="boss-bar">
+            <div class="boss-bar-fill" id="bossBar" style="width: 100%;"></div>
+        </div>
+    </div>
+    
+    <div class="level-up-screen" id="levelUpScreen">
+        <h2 style="font-family: 'Orbitron', monospace; font-size: 48px; margin-bottom: 40px; color: #00ffff; text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);">
+            LEVEL UP!
+        </h2>
+        <div class="card-container" id="cardContainer"></div>
+    </div>
+    
+    <div class="game-over-screen" id="gameOverScreen">
+        <div class="game-over-title">DEFEATED</div>
+        <div class="game-over-stats">Time Survived: <span id="finalTime">0:00</span></div>
+        <div class="game-over-stats">Enemies Killed: <span id="finalKills">0</span></div>
+        <div class="game-over-stats">Level Reached: <span id="finalLevel">1</span></div>
+        <div class="game-over-stats" style="color: #ffaa00; font-size: 32px; margin-top: 20px;">
+            True XP Gained: <span id="trueXpGained">0</span>
+        </div>
+        <div>
+            <button class="button" onclick="game.showSkillTree()">Skill Tree</button>
+            <button class="button" onclick="game.retryLevel()">Retry</button>
+            <button class="button" id="storyMapBtn" onclick="game.backToStoryMap()" style="display: none;">🗺️ Level Map</button>
+            <button class="button" onclick="game.restart()">Main Menu</button>
+        </div>
+    </div>
+    
+    <div class="game-over-screen" id="victoryScreen" style="display: none;">
+        <div class="game-over-title" style="color: #00ff88; text-shadow: 0 0 30px rgba(0, 255, 136, 0.8);">🏆 VICTORY 🏆</div>
+        <div class="game-over-stats" style="font-size: 28px;">Level <span id="victoryLevel">1</span> Complete!</div>
+        <div class="game-over-stats">Zone: <span id="victoryZone">Forest</span></div>
+        <div class="victory-stats-grid">
+            <div class="victory-stat">
+                <span class="victory-stat-icon">⏱️</span>
+                <span class="victory-stat-label">Time</span>
+                <span class="victory-stat-value" id="victoryTime">0:00</span>
+            </div>
+            <div class="victory-stat">
+                <span class="victory-stat-icon">👾</span>
+                <span class="victory-stat-label">Enemies</span>
+                <span class="victory-stat-value" id="victoryKills">0</span>
+            </div>
+            <div class="victory-stat">
+                <span class="victory-stat-icon">💀</span>
+                <span class="victory-stat-label">Bosses</span>
+                <span class="victory-stat-value" id="victoryBosses">0</span>
+            </div>
+            <div class="victory-stat">
+                <span class="victory-stat-icon">⬆️</span>
+                <span class="victory-stat-label">Level</span>
+                <span class="victory-stat-value" id="victoryPlayerLevel">1</span>
+            </div>
+        </div>
+        <div class="game-over-stats" style="color: #ffaa00; font-size: 32px; margin-top: 20px;">
+            ⭐ True XP Gained: <span id="victoryXp">0</span>
+        </div>
+        <div>
+            <button class="button" onclick="game.nextStoryLevel()">Next Level ▶</button>
+            <button class="button" onclick="game.backToStoryMap()">🗺️ Level Map</button>
+            <button class="button" onclick="game.restart()">Menu</button>
+        </div>
+    </div>
+
+    <div class="pause-screen" id="pauseScreen">
+        <div class="pause-title">PAUSED</div>
+        <div class="pause-stats">
+            <div>Level: <span id="pauseLevel">1</span></div>
+            <div style="margin-top: 10px; font-size: 18px; color: #a0b0ff;">XP Progress</div>
+            <div class="pause-xp-bar">
+                <div class="pause-xp-fill" id="pauseXPBar"></div>
+            </div>
+            <div style="font-size: 16px; margin-top: 5px;"><span id="pauseXP">0</span> / <span id="pauseXPNeeded">10</span></div>
+        </div>
+        <button class="button" onclick="game.togglePause()">Resume</button>
+        <button class="button" onclick="game.restart()">Quit to Menu</button>
+    </div>
+    
+    <div class="chest-screen" id="chestScreen">
+        <div class="chest-title">TREASURE CHEST</div>
+        <div class="chest-items" id="chestItems"></div>
+        <button class="button" onclick="game.closeChestScreen()">Collect</button>
+    </div>
+    
+    <div class="skill-tree-screen" id="skillTreeScreen">
+        <button class="button close-button" onclick="game.hideSkillTree()">✕ Close</button>
+        <div class="skill-tree-title">SKILL TREE</div>
+        <div class="skill-points">
+            Skill Points Available: <span id="skillPointsText">0</span>
+        </div>
+        <div class="skill-grid" id="skillGrid"></div>
+        <div style="text-align: center; margin-top: 40px;">
+            <button class="button" onclick="game.restartFromSkillTree()">Play Again</button>
+        </div>
+    </div>
+    
+    <!-- Music Control -->
+    <div class="music-control">
+        <button class="mute-button" id="muteButton" onclick="game.toggleMute()">🔊</button>
+        <input type="range" min="0" max="100" value="50" class="volume-slider" id="volumeSlider" oninput="game.setVolume(this.value)">
+        <button class="music-selector-button" onclick="game.showMusicSelector()" title="Music Selection">♪</button>
+    </div>
+    
+    <!-- Music Selector Screen -->
+    <div class="music-selector-screen" id="musicSelectorScreen">
+        <button class="music-selector-close" onclick="game.hideMusicSelector()">✕</button>
+        <div class="music-selector-title">SELECT MUSIC</div>
+        
+        <div class="music-category">
+            <div class="music-category-title">NORMAL GAMEPLAY</div>
+            <div class="music-track-buttons">
+                <button class="music-track-button active" id="track-endless" onclick="game.selectNormalTrack('endless')">
+                    🎵 Endless Waves
+                </button>
+                <button class="music-track-button" id="track-chill" onclick="game.selectNormalTrack('chill')">
+                    🎵 Chill Cozy
+                </button>
+            </div>
+        </div>
+        
+        <div class="music-category">
+            <div class="music-category-title">BOSS BATTLES</div>
+            <div class="music-track-buttons">
+                <button class="music-track-button active" id="track-crimson" onclick="game.selectBossTrack('crimson')">
+                    ⚔️ Crimson Last Stand
+                </button>
+                <button class="music-track-button" id="track-endless-boss" onclick="game.selectBossTrack('endless-boss')">
+                    ⚔️ Endless Boss Waves
+                </button>
+            </div>
+        </div>
+        
+        <div class="current-track-display">
+            <div>Now Playing: <span id="nowPlayingTrack">Endless Waves</span></div>
+        </div>
+    </div>
+
+    <!-- Audio Settings Screen -->
+    <div class="audio-settings-screen" id="audioSettingsScreen">
+        <button class="audio-settings-close" onclick="game.hideAudioSettings()">✕</button>
+        <div class="audio-settings-title">AUDIO SETTINGS</div>
+        
+        <div class="audio-category">
+            <div class="audio-category-title">�️ MASTER VOLUME</div>
+            <div class="audio-slider-container">
+                <span class="audio-slider-label">0%</span>
+                <input type="range" min="0" max="100" value="50" class="audio-slider" id="masterVolumeSlider" oninput="game.setMasterVolume(this.value)">
+                <span class="audio-slider-label">100%</span>
+            </div>
+        </div>
+        
+        <div class="audio-category">
+            <div class="audio-category-title">🎵 MUSIC VOLUME</div>
+            <div class="audio-slider-container">
+                <span class="audio-slider-label">0%</span>
+                <input type="range" min="0" max="100" value="100" class="audio-slider" id="musicVolumeSlider" oninput="game.setMusicVolume(this.value)">
+                <span class="audio-slider-label">100%</span>
+            </div>
+        </div>
+        
+        <div class="audio-category">
+            <div class="audio-category-title">🔊 SFX VOLUME</div>
+            <div class="audio-slider-container">
+                <span class="audio-slider-label">0%</span>
+                <input type="range" min="0" max="100" value="100" class="audio-slider" id="sfxVolumeSlider" oninput="game.setSfxVolume(this.value)">
+                <span class="audio-slider-label">100%</span>
+            </div>
+            <button class="audio-test-button" onclick="game.testSfx()">🔔 Test SFX</button>
+        </div>
+        
+        <div class="audio-category">
+            <div class="audio-category-title">🎶 NORMAL MUSIC TRACK</div>
+            <div class="audio-track-buttons">
+                <button class="audio-track-button active" id="audio-track-endless" onclick="game.selectNormalTrack('endless')">
+                    🎵 Endless Waves
+                </button>
+                <button class="audio-track-button" id="audio-track-chill" onclick="game.selectNormalTrack('chill')">
+                    🎵 Chill Cozy
+                </button>
+            </div>
+        </div>
+        
+        <div class="audio-category">
+            <div class="audio-category-title">⚔️ BOSS MUSIC TRACK</div>
+            <div class="audio-track-buttons">
+                <button class="audio-track-button active" id="audio-track-crimson" onclick="game.selectBossTrack('crimson')">
+                    ⚔️ Crimson Last Stand
+                </button>
+                <button class="audio-track-button" id="audio-track-endless-boss" onclick="game.selectBossTrack('endless-boss')">
+                    ⚔️ Endless Boss Waves
+                </button>
+            </div>
+        </div>
+        
+        <div class="audio-now-playing">
+            Now Playing: <span id="audioNowPlayingTrack">Endless Waves</span>
+        </div>
+    </div>
+
+    <!-- Achievements Screen -->
+    <div class="achievements-screen" id="achievementsScreen" style="display: none;">
+        <button class="close-btn" onclick="game.hideAchievements()">✕</button>
+        <div class="achievements-title">🏆 ACHIEVEMENTS</div>
+        <div class="achievements-grid" id="achievementsGrid"></div>
+    </div>
+
+    <!-- Bestiary Screen -->
+    <div class="bestiary-screen" id="bestiaryScreen" style="display: none;">
+        <button class="close-btn" onclick="game.hideBestiary()">✕</button>
+        <div class="bestiary-title">📖 BESTIARY</div>
+        <div class="bestiary-grid" id="bestiaryGrid"></div>
+    </div>
+
+    <!-- Relic Storage Screen -->
+    <div class="relic-screen" id="relicScreen" style="display: none;">
+        <button class="relic-close-btn" onclick="game.hideRelicStorage()">✕</button>
+        <div class="relic-screen-header">
+            <div class="relic-screen-title">💎 RELIC VAULT</div>
+            <div class="relic-screen-subtitle">Collect and combine powerful relics</div>
+        </div>
+        
+        <div class="relic-tabs">
+            <button class="relic-tab active" onclick="game.switchRelicTab('inventory')" id="relicTabInventory">📦 Inventory</button>
+            <button class="relic-tab" onclick="game.switchRelicTab('combine')" id="relicTabCombine">⚗️ Combine</button>
+            <button class="relic-tab" onclick="game.switchRelicTab('equipped')" id="relicTabEquipped">⚔️ Equipped</button>
+        </div>
+        
+        <!-- Inventory Tab -->
+        <div class="relic-tab-content" id="relicInventoryTab">
+            <div class="relic-filter-bar">
+                <button class="relic-filter active" onclick="game.filterRelics('all')" data-filter="all">All</button>
+                <button class="relic-filter" onclick="game.filterRelics('common')" data-filter="common">Common</button>
+                <button class="relic-filter" onclick="game.filterRelics('uncommon')" data-filter="uncommon">Uncommon</button>
+                <button class="relic-filter" onclick="game.filterRelics('epic')" data-filter="epic">Epic</button>
+                <button class="relic-filter" onclick="game.filterRelics('legendary')" data-filter="legendary">Legendary</button>
+                <button class="relic-filter" onclick="game.filterRelics('mythic')" data-filter="mythic">Mythic</button>
+            </div>
+            <div class="relic-inventory-stats">
+                <span>Total Relics: <span id="relicTotalCount">0</span></span>
+                <span>Equipped: <span id="relicEquippedCount">0</span>/5</span>
+            </div>
+            <div class="relic-inventory-grid" id="relicInventoryGrid">
+                <!-- Relics will be generated by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Combine Tab -->
+        <div class="relic-tab-content" id="relicCombineTab" style="display: none;">
+            <div class="combine-info">
+                <div class="combine-recipe">
+                    <span class="combine-rarity common">Common</span> + <span class="combine-rarity common">Common</span> = <span class="combine-rarity uncommon">Uncommon</span>
+                </div>
+                <div class="combine-recipe">
+                    <span class="combine-rarity uncommon">Uncommon</span> + <span class="combine-rarity uncommon">Uncommon</span> = <span class="combine-rarity epic">Epic</span>
+                </div>
+                <div class="combine-recipe">
+                    <span class="combine-rarity epic">Epic</span> + <span class="combine-rarity epic">Epic</span> = <span class="combine-rarity legendary">Legendary</span>
+                </div>
+                <div class="combine-recipe">
+                    <span class="combine-rarity legendary">Legendary</span> + <span class="combine-rarity legendary">Legendary</span> = <span class="combine-rarity mythic">Mythic</span>
+                </div>
+            </div>
+            <div class="combine-slots">
+                <div class="combine-slot" id="combineSlot1" onclick="game.selectCombineSlot(1)">
+                    <div class="combine-slot-label">Slot 1</div>
+                    <div class="combine-slot-content">Click to select</div>
+                </div>
+                <div class="combine-plus">+</div>
+                <div class="combine-slot" id="combineSlot2" onclick="game.selectCombineSlot(2)">
+                    <div class="combine-slot-label">Slot 2</div>
+                    <div class="combine-slot-content">Click to select</div>
+                </div>
+                <div class="combine-equals">=</div>
+                <div class="combine-result" id="combineResult">
+                    <div class="combine-slot-label">Result</div>
+                    <div class="combine-slot-content">???</div>
+                </div>
+            </div>
+            <button class="combine-button" id="combineButton" onclick="game.combineRelics()" disabled>⚗️ Combine Relics</button>
+            <div class="combine-select-grid" id="combineSelectGrid">
+                <!-- Combinable relics will be shown here -->
+            </div>
+        </div>
+        
+        <!-- Equipped Tab -->
+        <div class="relic-tab-content" id="relicEquippedTab" style="display: none;">
+            <div class="equipped-info">Equip up to 5 relics. Effects apply to all runs!</div>
+            <div class="equipped-slots" id="equippedSlots">
+                <div class="equipped-slot" data-slot="0" onclick="game.unequipRelic(0)"></div>
+                <div class="equipped-slot" data-slot="1" onclick="game.unequipRelic(1)"></div>
+                <div class="equipped-slot" data-slot="2" onclick="game.unequipRelic(2)"></div>
+                <div class="equipped-slot" data-slot="3" onclick="game.unequipRelic(3)"></div>
+                <div class="equipped-slot" data-slot="4" onclick="game.unequipRelic(4)"></div>
+            </div>
+            <div class="equipped-total-bonus" id="equippedTotalBonus">
+                <!-- Total bonuses shown here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Relic Drop Notification -->
+    <div class="relic-drop-notification" id="relicDropNotification" style="display: none;">
+        <div class="relic-drop-glow"></div>
+        <div class="relic-drop-content">
+            <div class="relic-drop-title">RELIC FOUND!</div>
+            <div class="relic-drop-icon" id="relicDropIcon">💎</div>
+            <div class="relic-drop-name" id="relicDropName">Power Crystal</div>
+            <div class="relic-drop-rarity" id="relicDropRarity">Common</div>
+        </div>
+    </div>
+
+    <!-- Run Stats Container (shown on game over) -->
+    <div id="runStatsContainer"></div>
+
+    <!-- Story Map Screen (Candy Crush Style) -->
+    <div class="story-map-screen" id="storyMapScreen" style="display: none;">
+        <button class="story-map-close" onclick="game.hideStoryMap()">✕</button>
+        <div class="story-map-title">📖 STORY MODE</div>
+        <div class="story-map-stats">
+            <span>Progress: <span id="storyMapProgress">0</span>/100</span>
+        </div>
+        <div class="story-map-container" id="storyMapContainer">
+            <div class="story-map-path" id="storyMapPath">
+                <!-- Levels will be generated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Screen -->
+    <div class="leaderboard-screen" id="leaderboardScreen" style="display: none;">
+        <button class="close-btn" onclick="game.hideLeaderboard()">✕</button>
+        <div class="leaderboard-title">🏆 ENDLESS LEADERBOARD</div>
+        <div class="leaderboard-subtitle">Your Best Endless Mode Runs</div>
+        <div class="leaderboard-list" id="leaderboardList">
+            <!-- Leaderboard entries will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Relic Filter Screen -->
+    <div class="relic-filter-screen" id="relicFilterScreen" style="display: none;">
+        <button class="close-btn" onclick="game.hideRelicFilter()">✕</button>
+        <div class="relic-filter-title">🎯 RELIC FILTER</div>
+        <div class="relic-filter-subtitle">Choose which relic rarities to collect</div>
+        <div class="relic-filter-options" id="relicFilterOptions">
+            <!-- Filter options will be generated by JavaScript -->
+        </div>
+        <div class="relic-filter-info">
+            Unchecked rarities will be ignored and despawn after 1 minute
+        </div>
+    </div>
+
+    <!-- Weekly Raid Boss Screen -->
+    <div class="raid-boss-screen" id="raidBossScreen" style="display: none;">
+        <button class="close-btn" onclick="game.hideRaidBoss()">✕</button>
+        <div class="raid-boss-header">
+            <div class="raid-boss-week">WEEKLY RAID BOSS</div>
+            <div class="raid-boss-status" id="raidBossStatus">ACTIVE</div>
+        </div>
+        <div class="raid-boss-icon" id="raidBossIcon">🌍</div>
+        <div class="raid-boss-name" id="raidBossName">WORLD EATER</div>
+        <div class="raid-boss-health-container">
+            <div class="raid-boss-health-bar" id="raidBossHealthBar" style="width: 100%;"></div>
+        </div>
+        <div class="raid-boss-health-text" id="raidBossHealth">10,000,000 / 10,000,000</div>
+        <div class="raid-boss-your-damage">
+            Your Damage: <span id="raidYourDamage">0</span>
+        </div>
+        <div class="raid-boss-info">
+            Defeat the raid boss with the community! Damage persists across runs.
+        </div>
+        <button class="button raid-boss-fight-btn" id="raidBossFightBtn" onclick="game.startRaidBossFight()">⚔️ FIGHT BOSS</button>
+    </div>
+
+    <!-- Credits Screen -->
+    <div class="credits-screen" id="creditsScreen" style="display: none;">
+        <button class="close-btn" onclick="game.hideCredits()">✕</button>
+        <div class="credits-container">
+            <div class="credits-scroll" id="creditsScroll">
+                <div class="credits-game-title">SURVIVOR PROTOCOL</div>
+                <div class="credits-spacer"></div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">Created & Directed By</div>
+                    <div class="credits-name-large">Chifor Alexandru</div>
+                </div>
+                
+                <div class="credits-spacer-small"></div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">Game Design</div>
+                    <div class="credits-person">Chifor Alexandru</div>
+                </div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">Lead Programming</div>
+                    <div class="credits-person">Chifor Alexandru</div>
+                </div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">Gameplay Systems</div>
+                    <div class="credits-person">Chifor Alexandru</div>
+                </div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">Level Design</div>
+                    <div class="credits-person">Chifor Alexandru</div>
+                </div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">UI/UX Design</div>
+                    <div class="credits-person">Chifor Alexandru</div>
+                </div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">Art Direction</div>
+                    <div class="credits-person">Chifor Alexandru</div>
+                </div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">Visual Effects</div>
+                    <div class="credits-person">Chifor Alexandru</div>
+                </div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">Character Design</div>
+                    <div class="credits-person">Chifor Alexandru</div>
+                </div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">Enemy Design</div>
+                    <div class="credits-person">Chifor Alexandru</div>
+                </div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">Balancing & Progression</div>
+                    <div class="credits-person">Chifor Alexandru</div>
+                </div>
+                
+                <div class="credits-spacer"></div>
+                <div class="credits-divider-line"></div>
+                <div class="credits-spacer"></div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">Development Tools</div>
+                    <div class="credits-tool">Visual Studio Code</div>
+                    <div class="credits-tool-desc">Code Editor & IDE</div>
+                </div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">AI Development Assistance</div>
+                    <div class="credits-tool">GitHub Copilot</div>
+                    <div class="credits-tool-desc">AI Pair Programming</div>
+                </div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">Music Production</div>
+                    <div class="credits-tool">Suno AI</div>
+                    <div class="credits-tool-desc">Original Soundtrack Generation</div>
+                </div>
+                
+                <div class="credits-spacer"></div>
+                <div class="credits-divider-line"></div>
+                <div class="credits-spacer"></div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">Built With</div>
+                    <div class="credits-tech">HTML5 Canvas</div>
+                    <div class="credits-tech">JavaScript</div>
+                    <div class="credits-tech">CSS3</div>
+                    <div class="credits-tech">Web Audio API</div>
+                    <div class="credits-tech">Gamepad API</div>
+                </div>
+                
+                <div class="credits-spacer"></div>
+                <div class="credits-divider-line"></div>
+                <div class="credits-spacer"></div>
+                
+                <div class="credits-section">
+                    <div class="credits-role">Special Thanks</div>
+                    <div class="credits-thanks">The Open Source Community</div>
+                    <div class="credits-thanks">All Players & Testers</div>
+                    <div class="credits-thanks">Coffee</div>
+                </div>
+                
+                <div class="credits-spacer-large"></div>
+                
+                <div class="credits-section">
+                    <div class="credits-quote">"Every great game starts with a single line of code."</div>
+                </div>
+                
+                <div class="credits-spacer"></div>
+                
+                <div class="credits-section">
+                    <div class="credits-copyright">© 2026 Chifor Alexandru</div>
+                    <div class="credits-copyright">All Rights Reserved</div>
+                </div>
+                
+                <div class="credits-spacer"></div>
+                
+                <div class="credits-final">
+                    <div class="credits-thankyou">Thank You For Playing</div>
+                </div>
+                
+                <div class="credits-spacer-large"></div>
+            </div>
+        </div>
+        <div class="credits-skip-hint">Press ESC or click ✕ to close</div>
+    </div>
+
+    <!-- Run History Screen -->
+    <div class="run-history-screen" id="runHistoryScreen" style="display: none;">
+        <button class="close-btn" onclick="game.hideRunHistory()">✕</button>
+        <div class="run-history-title">📊 RUN HISTORY</div>
+        <div class="run-history-subtitle">Your last 50 runs</div>
+        <div class="run-history-list" id="runHistoryList">
+            <!-- Run history entries will be generated by JavaScript -->
+        </div>
+        <div class="run-history-actions">
+            <button class="button" onclick="game.clearRunHistory()">🗑️ Clear History</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/systems.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/enemies.js"></script>
+    <script src="js/mechanics.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
