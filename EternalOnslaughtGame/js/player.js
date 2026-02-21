@@ -1,3 +1,38 @@
+// Auto-combine all possible relics in the player's inventory
+game.autoCombineAllRelics = function() {
+    // Assume player.relics is an array of {type, rarity}
+    const rarities = ['common', 'uncommon', 'epic', 'legendary', 'mythic'];
+    let changed = true;
+
+    while (changed) {
+        changed = false;
+        for (let type of game.relicTypes.map(r => r.id)) {
+            for (let i = 0; i < rarities.length - 1; i++) {
+                const rarity = rarities[i];
+                // Count how many relics of this type and rarity
+                let count = game.player.relics.filter(r => r.type === type && r.rarity === rarity).length;
+                // If at least 2, combine them
+                while (count >= 2) {
+                    // Remove two relics
+                    let removed = 0;
+                    game.player.relics = game.player.relics.filter(r => {
+                        if (removed < 2 && r.type === type && r.rarity === rarity) {
+                            removed++;
+                            return false;
+                        }
+                        return true;
+                    });
+                    // Add one relic of next rarity
+                    game.player.relics.push({type: type, rarity: rarities[i + 1]});
+                    changed = true;
+                    count -= 2;
+                }
+            }
+        }
+    }
+    // Optionally update UI
+    if (game.updateRelicUI) game.updateRelicUI();
+};
 game.createPlayer = function() {
     const maxHpBonus = (this.skills.maxhp1 || 0) * 10;
     const damageBonus = 1 + ((this.skills.damage1 || 0) * 0.05);

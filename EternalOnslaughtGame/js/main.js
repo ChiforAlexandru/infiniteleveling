@@ -1,3 +1,149 @@
+// Dynamically add Character Stats button after scripts are loaded
+window.addEventListener('DOMContentLoaded', function() {
+    const btn = document.createElement('button');
+    btn.className = 'button';
+    btn.innerText = '🧬 Character Stats';
+    btn.onclick = function() { game.showStatsScreen(); };
+    const startButtons = document.getElementById('startButtons');
+    if (startButtons) startButtons.insertBefore(btn, startButtons.firstChild);
+});
+// Show the Character Stats modal
+game.showStatsScreen = function() {
+    let html = '';
+    // If no class selected, show placeholder
+    if (!game.characters || typeof game.selectedCharacterIndex !== 'number' || !game.characters[game.selectedCharacterIndex]) {
+        html = '<div style="padding:32px 0;text-align:center;color:#aaa;font-size:1.2em;">Please select a class to display stats.</div>';
+    } else {
+        // If player is missing, create a temp preview player for stats
+        let previewPlayer = game.player;
+        if (!previewPlayer || !previewPlayer.maxHealth) {
+            // Use the same logic as createPlayer, but do not start a run
+            const char = game.characters[game.selectedCharacterIndex];
+            const skills = game.skills || {};
+            const maxHpBonus = (skills.maxhp1 || 0) * 10;
+            const damageBonus = 1 + ((skills.damage1 || 0) * 0.05);
+            const speedBonus = 1 + ((skills.speed1 || 0) * 0.05);
+            const fireRateBonus = 1 - ((skills.firerate1 || 0) * 0.05);
+            const powerBonus = 1 + ((skills.maxpower || 0) * 0.03);
+            previewPlayer = {
+                maxHealth: (char.stats.hp + maxHpBonus) * powerBonus,
+                damage: char.stats.damage * damageBonus * powerBonus,
+                speed: char.stats.speed * speedBonus * powerBonus,
+                fireRate: (char.stats.fireRate || 500) * fireRateBonus,
+                relics: [],
+                powerUps: []
+            };
+        }
+        const stats = game.calculateTotalStats(previewPlayer);
+        html = '<table style="width:100%;text-align:left;">';
+        for (let stat of Object.keys(stats)) {
+            html += `<tr><td><b>${stat}</b></td><td>${stats[stat].total}</td><td style='font-size:12px;color:#aaa;'>${stats[stat].breakdown}</td></tr>`;
+        }
+        html += '</table>';
+    }
+    document.getElementById('statsBreakdown').innerHTML = html;
+    document.getElementById('statsScreen').style.display = 'block';
+};
+
+// Hide the Character Stats modal
+game.hideStatsScreen = function() {
+    document.getElementById('statsScreen').style.display = 'none';
+};
+
+// Calculate total stats and their sources
+game.calculateTotalStats = function(player) {
+    // Defensive: if player is not defined, return empty
+    if (!player) return {};
+
+    // Helper to format breakdown
+    function breakdownRow(base, skill, relic, powerup) {
+        let arr = [];
+        if (base !== 0) arr.push(`Base: ${base}`);
+        if (skill !== 0) arr.push(`Skill: ${skill > 0 ? '+' : ''}${skill}`);
+        if (relic !== 0) arr.push(`Relic: ${relic > 0 ? '+' : ''}${relic}`);
+        if (powerup !== 0) arr.push(`PowerUp: ${powerup > 0 ? '+' : ''}${powerup}`);
+        return arr.join(', ');
+    }
+
+    // --- Base values ---
+    let char = game.characters?.[game.selectedCharacterIndex] || {};
+    let baseStats = char.stats || {};
+    // --- Skill tree bonuses ---
+    let skills = game.skills || {};
+    // --- Relic bonuses ---
+    let relicBonuses = { maxHealth: 0, damage: 0, speed: 0, fireRate: 0 };
+    if (player.relics && Array.isArray(player.relics)) {
+        for (let relic of player.relics) {
+            // Example: each 'health' relic gives +10 maxHealth, etc. Customize as needed.
+            if (relic.type === 'health') relicBonuses.maxHealth += 10;
+            if (relic.type === 'damage') relicBonuses.damage += 2;
+            if (relic.type === 'speed') relicBonuses.speed += 0.1;
+            if (relic.type === 'firerate') relicBonuses.fireRate -= 20; // Lower fireRate = faster
+        }
+    }
+    // --- Power-up bonuses (example, if you have a system for these) ---
+    let powerupBonuses = { maxHealth: 0, damage: 0, speed: 0, fireRate: 0 };
+    if (player.powerUps && Array.isArray(player.powerUps)) {
+        for (let pu of player.powerUps) {
+            if (pu.type === 'health') powerupBonuses.maxHealth += pu.value;
+            if (pu.type === 'damage') powerupBonuses.damage += pu.value;
+            if (pu.type === 'speed') powerupBonuses.speed += pu.value;
+            if (pu.type === 'firerate') powerupBonuses.fireRate += pu.value;
+        }
+    }
+
+    // --- Skill tree calculations (examples, adjust as needed) ---
+    let skillMaxHp = (skills.maxhp1 || 0) * 10;
+    let skillDamage = (skills.damage1 || 0) * 0.05 * (baseStats.damage || 0);
+    let skillSpeed = (skills.speed1 || 0) * 0.05 * (baseStats.speed || 0);
+    let skillFireRate = (skills.firerate1 || 0) * -0.05 * (baseStats.fireRate || 0);
+    let skillRegen = (skills.regen || 0) * 0.25;
+    let skillCrit = (skills.critchance || 0) * 0.03;
+    let skillRange = (skills.projrange || 0) * 0.08 * (baseStats.range || 400);
+    let skillLifesteal = (skills.vampiric || 0) * 0.02;
+    let skillExtraDmg = (skills.bossdmg || 0) * 0.10 * (baseStats.damage || 0);
+
+    // --- Calculate totals ---
+    let stats = {
+        'Max Health': {
+            total: Math.round((baseStats.hp || 0) + skillMaxHp + relicBonuses.maxHealth + powerupBonuses.maxHealth),
+            breakdown: breakdownRow(baseStats.hp || 0, skillMaxHp, relicBonuses.maxHealth, powerupBonuses.maxHealth)
+        },
+        'Damage': {
+            total: Math.round((baseStats.damage || 0) + skillDamage + relicBonuses.damage + powerupBonuses.damage),
+            breakdown: breakdownRow(baseStats.damage || 0, skillDamage, relicBonuses.damage, powerupBonuses.damage)
+        },
+        'Speed': {
+            total: ((baseStats.speed || 0) + skillSpeed + relicBonuses.speed + powerupBonuses.speed).toFixed(2),
+            breakdown: breakdownRow(baseStats.speed || 0, skillSpeed, relicBonuses.speed, powerupBonuses.speed)
+        },
+        'Fire Rate': {
+            total: Math.round((baseStats.fireRate || 0) + skillFireRate + relicBonuses.fireRate + powerupBonuses.fireRate),
+            breakdown: breakdownRow(baseStats.fireRate || 0, skillFireRate, relicBonuses.fireRate, powerupBonuses.fireRate)
+        },
+        'Regen': {
+            total: ((player.regen || 0) + skillRegen).toFixed(2),
+            breakdown: breakdownRow(player.regen || 0, skillRegen, 0, 0)
+        },
+        'Lifesteal': {
+            total: ((player.vampiric || 0) + skillLifesteal).toFixed(2),
+            breakdown: breakdownRow(player.vampiric || 0, skillLifesteal, 0, 0)
+        },
+        'Extra Damage': {
+            total: ((player.bossDamageBonus ? (player.bossDamageBonus - 1) * 100 : 0) + (skillExtraDmg ? (skillExtraDmg / (baseStats.damage || 1)) * 100 : 0)).toFixed(1) + '%',
+            breakdown: breakdownRow(player.bossDamageBonus ? (player.bossDamageBonus - 1) * 100 : 0, skillExtraDmg ? (skillExtraDmg / (baseStats.damage || 1)) * 100 : 0, 0, 0)
+        },
+        'Range': {
+            total: ((player.projectileRange || baseStats.range || 400) + skillRange).toFixed(0),
+            breakdown: breakdownRow(player.projectileRange || baseStats.range || 400, skillRange, 0, 0)
+        },
+        'Crit Chance': {
+            total: (((player.critChance || 0) + skillCrit) * 100).toFixed(1) + '%',
+            breakdown: breakdownRow((player.critChance || 0) * 100, skillCrit * 100, 0, 0)
+        }
+    };
+    return stats;
+};
 // --- Controller Start/Select open menu/skill tree and activate UI nav ---
 game._uiMenuOpen = false;
 const origPollGamepad = game.pollGamepad;

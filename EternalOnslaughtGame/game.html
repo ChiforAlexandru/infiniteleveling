@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,7 +56,13 @@
             <div style="font-size: 16px; margin-top: 10px; color: #00ffff;">Skills Unlocked: <span id="startSkillsUnlocked">0</span></div>
         </div>
         <div id="characterSelectionContainer"></div>
-        <div class="start-buttons">
+        <div class="start-buttons" id="startButtons">
+                    <!-- Character Stats Modal -->
+                    <div class="stats-screen" id="statsScreen" style="display: none;">
+                        <button class="close-btn" onclick="game.hideStatsScreen()">✕</button>
+                        <div class="stats-title">🧬 CHARACTER STATS</div>
+                        <div id="statsBreakdown"></div>
+                    </div>
             <button class="button" onclick="game.startStoryMode()">📖 Story Mode (Lvl <span id="storyProgressDisplay">1</span>)</button>
             <button class="button" onclick="game.startGame()">♾️ Endless Mode</button>
             <button class="button" onclick="game.startBossRush()">💀 Boss Rush</button>
@@ -657,6 +665,12 @@
         </div>
     </div>
 
+    <!-- Character Stats Modal -->
+    <div class="stats-screen" id="statsScreen" style="display: none;">
+        <button class="close-btn" onclick="game.hideStatsScreen()">✕</button>
+        <div class="stats-title">🧬 CHARACTER STATS</div>
+        <div id="statsBreakdown"></div>
+    </div>
     <!-- Scripts -->
     <script src="js/utils.js"></script>
     <script src="js/game.js"></script>
