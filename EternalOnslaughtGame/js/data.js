@@ -823,11 +823,11 @@ game.skillTree = [
 // ============================================
 
 game.relicRarities = {
-    common: { name: 'Common', color: '#888888', bgColor: '#2a2a2a', dropChance: 0.008, multiplier: 1 },
-    uncommon: { name: 'Uncommon', color: '#44dd44', bgColor: '#1a3a1a', dropChance: 0.0008, multiplier: 1.5 },
-    epic: { name: 'Epic', color: '#aa44ff', bgColor: '#2a1a3a', dropChance: 0.00015, multiplier: 2.5 },
-    legendary: { name: 'Legendary', color: '#ff8800', bgColor: '#3a2a1a', dropChance: 0.00001, multiplier: 4 },
-    mythic: { name: 'Mythic', color: '#ff4444', bgColor: '#3a1a1a', dropChance: 0.00000067, multiplier: 7 }
+    common: { name: 'Common', color: '#888888', bgColor: '#2a2a2a', dropChance: 0.0016, multiplier: 1 },
+    uncommon: { name: 'Uncommon', color: '#44dd44', bgColor: '#1a3a1a', dropChance: 0.00016, multiplier: 1.5 },
+    epic: { name: 'Epic', color: '#aa44ff', bgColor: '#2a1a3a', dropChance: 0.00003, multiplier: 2.5 },
+    legendary: { name: 'Legendary', color: '#ff8800', bgColor: '#3a2a1a', dropChance: 0.000002, multiplier: 4 },
+    mythic: { name: 'Mythic', color: '#ff4444', bgColor: '#3a1a1a', dropChance: 0.000000134, multiplier: 7 }
 };
 
 game.relicTypes = [

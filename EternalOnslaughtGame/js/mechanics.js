@@ -102,9 +102,10 @@ game.spawnXpOrb = function(x, y, value) {
 };
 
 game.gainXp = function(amount) {
+    // Reduce skill tree experience gain by 50%
     const xpGainBonus = 1 + ((this.skills.xpgain || 0) * 0.1);
     const relicXpBonus = this.player.xpMultiplier || 1;
-    this.xp += amount * xpGainBonus * relicXpBonus;
+    this.xp += amount * xpGainBonus * relicXpBonus * 0.5;
 
     if (!this.paused && this.xp >= this.xpNeeded) {
         this.levelUp();

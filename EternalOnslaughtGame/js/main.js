@@ -4,8 +4,53 @@ window.addEventListener('DOMContentLoaded', function() {
     btn.className = 'button';
     btn.innerText = '🧬 Character Stats';
     btn.onclick = function() { game.showStatsScreen(); };
+    // Move stats button near bestiary
+    const bestiary = document.getElementById('bestiarySection');
+    if (bestiary) {
+        bestiary.parentNode.insertBefore(btn, bestiary.nextSibling);
+    } else {
+        // fallback: add to end of startButtons
+        const startButtons = document.getElementById('startButtons');
+        if (startButtons) {
+            startButtons.appendChild(btn);
+        }
+    }
+    // Enhance main menu button visuals
     const startButtons = document.getElementById('startButtons');
-    if (startButtons) startButtons.insertBefore(btn, startButtons.firstChild);
+    if (startButtons) {
+        startButtons.style.display = 'grid';
+        startButtons.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        startButtons.style.gridTemplateRows = 'repeat(2, auto)';
+        startButtons.style.gap = '24px';
+        startButtons.style.justifyItems = 'center';
+        startButtons.style.alignItems = 'center';
+        startButtons.style.padding = '32px 0';
+        setTimeout(() => {
+            Array.from(startButtons.querySelectorAll('button')).forEach(button => {
+                button.style.background = 'linear-gradient(135deg, #1a0a2a 60%, #00ffd0 100%)';
+                button.style.color = '#fff';
+                button.style.fontWeight = 'bold';
+                button.style.fontSize = '1.2em';
+                button.style.border = 'none';
+                button.style.borderRadius = '16px';
+                button.style.boxShadow = '0 4px 24px #00ffd0, 0 2px 8px #000 inset';
+                button.style.padding = '18px 32px';
+                button.style.margin = '0';
+                button.style.transition = 'background 0.3s, box-shadow 0.3s, transform 0.2s';
+                button.style.cursor = 'pointer';
+                button.onmouseover = () => {
+                    button.style.background = 'linear-gradient(135deg, #00ffd0 60%, #1a0a2a 100%)';
+                    button.style.boxShadow = '0 8px 32px #00ffd0, 0 2px 8px #000 inset';
+                    button.style.transform = 'scale(1.05)';
+                };
+                button.onmouseout = () => {
+                    button.style.background = 'linear-gradient(135deg, #1a0a2a 60%, #00ffd0 100%)';
+                    button.style.boxShadow = '0 4px 24px #00ffd0, 0 2px 8px #000 inset';
+                    button.style.transform = 'scale(1)';
+                };
+            });
+        }, 100);
+    }
 });
 // Show the Character Stats modal
 game.showStatsScreen = function() {
@@ -337,6 +382,17 @@ game.updateStartScreen = function() {
 const origShowRelicStorage = game.showRelicStorage;
 game.showRelicStorage = function() {
     origShowRelicStorage.call(this);
+    // Add Auto-Combine Relics button if not present
+    const relicScreen = document.getElementById('relicScreen');
+    if (relicScreen && !document.getElementById('autoCombineRelicsBtn')) {
+        const relicBtn = document.createElement('button');
+        relicBtn.className = 'button';
+        relicBtn.id = 'autoCombineRelicsBtn';
+        relicBtn.innerText = '🔄 Auto-Combine Relics';
+        relicBtn.style.margin = '12px 0';
+        relicBtn.onclick = function() { game.autoCombineAllRelics(); };
+        relicScreen.insertBefore(relicBtn, relicScreen.firstChild);
+    }
     setTimeout(() => game.activateUiNav('#relicScreen button, #relicScreen .relic-tab, #relicScreen .relic-filter'), 50);
 };
 const origHideRelicStorage = game.hideRelicStorage;
@@ -558,7 +614,7 @@ game.init = function() {
 
 game.initCharacterSelection = function() {
     const container = document.getElementById('characterSelectionContainer');
-    let html = '<div class="character-selection">';
+    let html = '<div class="character-selection" style="display:grid; grid-template-columns:repeat(4, 1fr); grid-template-rows:repeat(2, 1fr); gap:18px; justify-items:center; align-items:center; width:100%; max-width:1200px; margin:auto;">';
     this.characters.forEach((char, index) => {
         const isUnlocked = this.isCharacterUnlocked ? this.isCharacterUnlocked(char.name) : true;
         const selectedClass = index === this.selectedCharacterIndex ? 'selected' : '';
@@ -581,23 +637,36 @@ game.initCharacterSelection = function() {
 
         const premiumLabel = char.premium && isUnlocked ? `<div style="font-size: 12px; color: #ffd700; font-weight:bold; margin-top: 8px; text-shadow: 0 0 10px rgba(255,215,0,0.6); position: relative; z-index: 2; background: rgba(15,10,25,0.95); padding: 6px; border-radius: 6px;">⚜ PREMIUM ${char.cost} ⚜</div>` : '';
 
-        // Character-specific background styles
+        // Class card split layout
         let bgStyle = '';
-        let extraContent = '';
+        let leftImage = '';
+        let rightContent = '';
+        let showImage = false;
         if (char.name === 'Necromancer' && isUnlocked) {
-            bgStyle = 'background-image: url(Images/Necromancer.png); background-size: contain; background-position: center center; background-repeat: no-repeat;';
+            leftImage = `<div style="flex:0 0 120px; width:120px; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #1a0a2a 60%, #2a1a3a 100%); border-radius:12px 0 0 12px; overflow:hidden; box-shadow: 0 0 16px 4px #000 inset;"><img src='Images/Necromancer.png' alt='Necromancer' style='width:auto; height:60%; max-width:80%; max-height:80%; object-fit:contain; filter:drop-shadow(0 0 16px #00ffcc);'/></div>`;
+            showImage = true;
         }
+        if (char.name === 'Summoner' && isUnlocked) {
+            leftImage = `<div style="flex:0 0 120px; width:120px; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #1a0a2a 60%, #3a1a1a 100%); border-radius:12px 0 0 12px; overflow:hidden; box-shadow: 0 0 16px 4px #000 inset;"><img src='Images/summoner.png' alt='Summoner' style='width:auto; height:60%; max-width:80%; max-height:80%; object-fit:contain; filter:drop-shadow(0 0 16px #ffaa00);'/></div>`;
+            showImage = true;
+        }
+        // Right content (name, desc, stats)
+        rightContent = `
+            <div style="flex:1 1 0; min-width:140px; max-width:320px; padding:16px 10px 10px 10px; display:flex; flex-direction:column; justify-content:flex-start; background:linear-gradient(135deg, #1a0a2a 80%, #2a1a3a 100%); border-radius:${showImage ? '0 12px 12px 0' : '12px'}; height:100%; box-sizing:border-box; box-shadow: 0 0 16px 4px #000 inset; overflow:hidden;">
+                <div class="char-name" style="color: ${isUnlocked && (char.name==='Summoner'||char.name==='Necromancer') ? '#00ffd0' : isUnlocked ? '#00ffcc' : '#666'}; font-weight:bold; margin-bottom:8px; font-size: 1.1em; text-shadow: 0 0 16px #00ffd0, 0 2px 4px #000; letter-spacing: 1px; position: relative; z-index: 3; background: none; padding: 0; border-radius: 0; display: block; word-break:break-word;">${isUnlocked ? char.name : '???'}</div>
+                <div class="char-desc" style="font-size: 0.7em; color: ${isUnlocked && (char.name==='Summoner'||char.name==='Necromancer') ? '#fff' : isUnlocked ? '#c8b8d8' : '#666'}; text-shadow: 0 2px 8px #000; line-height: 1.3; background: none; padding: 0; border-radius: 0; position: relative; z-index: 3; margin-bottom: 8px; word-break:break-word; white-space:normal;">${isUnlocked ? char.description : 'Character Locked'}</div>
+                <div style="position:relative; z-index:3; margin-bottom:6px; font-size:0.7em;">${statsHtml}</div>
+                ${premiumLabel}
+            </div>
+        `;
         
         const lockedOverlay = !isUnlocked ? '<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); border-radius: 12px; z-index: 1;"></div>' : '';
         // Add data-index for event delegation
         html += `
-            <div class="character-option ${selectedClass} ${lockedClass}" tabindex="0" data-index="${index}" style="${bgStyle}; ${!isUnlocked ? 'cursor: not-allowed; opacity: 0.7;' : ''}">
+            <div class="character-option ${selectedClass} ${lockedClass}" tabindex="0" data-index="${index}" style="display:flex; flex-direction:row; align-items:stretch; height:160px; min-width:220px; max-width:340px; margin:auto; box-sizing:border-box; ${!isUnlocked ? 'cursor: not-allowed; opacity: 0.7;' : ''}; overflow:hidden; background:none; border-radius:12px; position:relative; transition:box-shadow 0.3s; box-shadow: 0 0 16px 4px #00ffd0 inset, 0 0 16px 0px #000;">
                 ${lockedOverlay}
-                <div class="char-name" style="color: ${isUnlocked ? '#00ffcc' : '#666'}; font-weight:bold; margin-bottom:8px; font-size: 1em; text-shadow: 0 0 15px rgba(0,255,200,0.5), 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 2px; position: relative; z-index: 2; background: rgba(15,10,25,0.9); padding: 6px 12px; border-radius: 6px; display: inline-block;">${isUnlocked ? char.name : '???'}</div>
-                <div class="char-desc" style="font-size: 14px; color: ${isUnlocked ? '#c8b8d8' : '#666'}; text-shadow: 0 2px 4px rgba(0,0,0,0.9); line-height: 1.4; background: rgba(15,10,25,0.95); padding: 8px; border-radius: 6px; position: relative; z-index: 2;">${isUnlocked ? char.description : 'Character Locked'}</div>
-                ${statsHtml}
-                ${premiumLabel}
-                ${extraContent}
+                ${showImage ? leftImage : ''}
+                ${rightContent}
             </div>
         `;
     });

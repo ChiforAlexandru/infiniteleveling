@@ -1,3 +1,39 @@
+// Draw HP bar for weekly raid boss
+const originalDrawBosses = game.drawBosses || function(){};
+game.drawBosses = function() {
+    this.bosses.forEach(boss => {
+        if (boss.isRaidBoss && !boss.hidden) {
+            const ctx = window.ctx || (window.gameCanvas && window.gameCanvas.getContext('2d'));
+            if (ctx) {
+                // HP bar position
+                const barWidth = 180;
+                const barHeight = 18;
+                const x = boss.x - barWidth / 2;
+                const y = boss.y - boss.radius - 40;
+                // Background
+                ctx.save();
+                ctx.globalAlpha = 0.85;
+                ctx.fillStyle = '#222';
+                ctx.fillRect(x, y, barWidth, barHeight);
+                // HP fill
+                const hpPercent = boss.health / boss.maxHealth;
+                ctx.fillStyle = '#ff4444';
+                ctx.fillRect(x, y, barWidth * hpPercent, barHeight);
+                // Border
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, barWidth, barHeight);
+                // Boss name
+                ctx.font = 'bold 16px Orbitron, monospace';
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.fillText(boss.name, boss.x, y - 8);
+                ctx.restore();
+            }
+        }
+    });
+    if (originalDrawBosses) originalDrawBosses.call(this);
+};
 // ==================== SPRITE ANIMATION SYSTEM ====================
 game.spriteAnimations = {
     survivor: {
@@ -2348,6 +2384,8 @@ game.startRaidBossFight = function() {
 game.spawnRaidBoss = function() {
     if (!this.raidBoss) return;
     
+    // Make raid boss much faster
+    const speedMultiplier = 3.5; // Increase as needed for "a lot faster"
     const boss = {
         x: MAP_WIDTH / 2,
         y: MAP_HEIGHT / 2 - 200,
@@ -2355,7 +2393,7 @@ game.spawnRaidBoss = function() {
         health: this.raidBoss.currentHealth,
         maxHealth: this.raidBoss.baseHealth,
         damage: this.raidBoss.damage,
-        speed: this.raidBoss.speed,
+        speed: this.raidBoss.speed * speedMultiplier,
         radius: 80,
         color: this.raidBoss.color,
         secondaryColor: this.raidBoss.secondaryColor,
@@ -2364,7 +2402,89 @@ game.spawnRaidBoss = function() {
         attacks: this.raidBoss.attacks,
         lastAttack: 0,
         attackCooldown: 3000,
-        phase: 1
+        phase: 1,
+        canTeleport: true,
+        teleportCooldown: 3500, // ms
+        lastTeleport: 0,
+        splitPhase: false,
+        splitPhaseTimer: 0,
+        splitClones: []
+    };
+    // Helper to spawn split clones
+    game.spawnRaidBossClones = function(mainBoss) {
+        const clones = [];
+        for (let i = 0; i < 4; i++) {
+            const angle = (Math.PI * 2 * i) / 4;
+            clones.push({
+                x: mainBoss.x + Math.cos(angle) * 180,
+                y: mainBoss.y + Math.sin(angle) * 180,
+                name: mainBoss.name + ' Clone',
+                health: Math.floor(mainBoss.maxHealth * 0.15),
+                maxHealth: Math.floor(mainBoss.maxHealth * 0.15),
+                damage: Math.floor(mainBoss.damage * 0.5),
+                speed: mainBoss.speed * 1.5,
+                radius: 50,
+                color: mainBoss.color,
+                secondaryColor: mainBoss.secondaryColor,
+                icon: mainBoss.icon,
+                isRaidBossClone: true,
+                parentBoss: mainBoss,
+                despawnTime: Date.now() + 20000 // 20s
+            });
+        }
+        return clones;
+    };
+    // Split phase logic for raid boss
+    const originalUpdateBossesSplit = game.updateBosses;
+    game.updateBosses = function(deltaTime) {
+        originalUpdateBossesSplit.call(this, deltaTime);
+        this.bosses.forEach((boss, idx) => {
+            if (boss.isRaidBoss && !boss.splitPhase && boss.health < boss.maxHealth * 0.5) {
+                // Trigger split phase once below 50% health
+                boss.splitPhase = true;
+                boss.splitPhaseTimer = 20000; // 20 seconds
+                boss.splitClones = game.spawnRaidBossClones(boss);
+                // Hide main boss during split
+                boss.hidden = true;
+                // Add clones to bosses array
+                boss.splitClones.forEach(clone => this.bosses.push(clone));
+            }
+            if (boss.isRaidBoss && boss.splitPhase) {
+                boss.splitPhaseTimer -= deltaTime;
+                if (boss.splitPhaseTimer <= 0) {
+                    // End split phase: remove clones, unhide main boss
+                    this.bosses = this.bosses.filter(b => !b.isRaidBossClone || b.parentBoss !== boss);
+                    boss.splitPhase = false;
+                    boss.hidden = false;
+                }
+            }
+            // Remove clones after 20s or if parent boss is dead
+            if (boss.isRaidBossClone && (Date.now() > boss.despawnTime || !boss.parentBoss || boss.parentBoss.health <= 0)) {
+                this.bosses.splice(idx, 1);
+            }
+        });
+    };
+    // Add teleport logic for raid boss in update loop
+    const originalUpdateBosses = game.updateBosses;
+    game.updateBosses = function(deltaTime) {
+        originalUpdateBosses.call(this, deltaTime);
+        // Teleport logic for raid boss
+        this.bosses.forEach(boss => {
+            if (boss.isRaidBoss && boss.canTeleport) {
+                const now = Date.now();
+                if (!boss.lastTeleport) boss.lastTeleport = 0;
+                if (now - boss.lastTeleport > boss.teleportCooldown) {
+                    // Teleport to a random position near the player
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 200 + Math.random() * 150;
+                    boss.x = this.player.x + Math.cos(angle) * dist;
+                    boss.y = this.player.y + Math.sin(angle) * dist;
+                    boss.lastTeleport = now;
+                    // VFX: create a purple explosion at new location
+                    if (this.createExplosion) this.createExplosion(boss.x, boss.y, '#9400d3', 8);
+                }
+            }
+        });
     };
     
     this.bosses.push(boss);
@@ -2377,6 +2497,36 @@ game.damageRaidBoss = function(damage) {
     
     this.raidBoss.currentHealth = Math.max(0, this.raidBoss.currentHealth - damage);
     this.raidDamageDealt += damage;
+    // VFX: Flash boss and screen shake
+    const bossObj = this.bosses.find(b => b.isRaidBoss);
+    if (bossObj) {
+        bossObj.flashTimer = 180;
+        if (this.triggerScreenShake) this.triggerScreenShake(7, 180);
+        if (this.createExplosion) this.createExplosion(bossObj.x, bossObj.y, '#ff00ff', 5);
+    }
+    // Draw boss flash effect (add to your boss draw function if not present)
+    const originalDrawBosses = game.drawBosses || function(){};
+    game.drawBosses = function() {
+        this.bosses.forEach(boss => {
+            if (boss.flashTimer && boss.flashTimer > 0) {
+                boss.flashTimer -= 16;
+                // Draw a white overlay or glow
+                const ctx = window.ctx || (window.gameCanvas && window.gameCanvas.getContext('2d'));
+                if (ctx) {
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, boss.flashTimer / 180) * 0.7;
+                    ctx.beginPath();
+                    ctx.arc(boss.x, boss.y, boss.radius + 10, 0, Math.PI * 2);
+                    ctx.fillStyle = '#fff';
+                    ctx.shadowColor = '#ff00ff';
+                    ctx.shadowBlur = 30;
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+        });
+        if (originalDrawBosses) originalDrawBosses.call(this);
+    };
     
     localStorage.setItem('raidBoss', JSON.stringify(this.raidBoss));
     localStorage.setItem('raidDamageDealt', this.raidDamageDealt.toString());
