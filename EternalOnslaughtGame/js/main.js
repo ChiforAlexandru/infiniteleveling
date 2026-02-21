@@ -439,7 +439,7 @@ game.initCharacterSelection = function() {
         let bgStyle = '';
         let extraContent = '';
         if (char.name === 'Necromancer' && isUnlocked) {
-            bgStyle = 'background-image: url(images/Necromancer.png); background-size: contain; background-position: center center; background-repeat: no-repeat;';
+            bgStyle = 'background-image: url(Images/Necromancer.png); background-size: contain; background-position: center center; background-repeat: no-repeat;';
         }
         
         const lockedOverlay = !isUnlocked ? '<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); border-radius: 12px; z-index: 1;"></div>' : '';
@@ -538,8 +538,8 @@ game.renderStoryMap = function() {
 
     // Zone configurations
     const zones = [
-        { name: 'Forest', key: 'forest', start: 1, end: 10, color: '#00ff88', image: 'images/DarkForest.png' },
-        { name: 'Ice Realm', key: 'ice', start: 11, end: 20, color: '#66ccff', image: 'images/IceMountains.png' },
+        { name: 'Forest', key: 'forest', start: 1, end: 10, color: '#00ff88', image: 'Images/DarkForest.png' },
+        { name: 'Ice Realm', key: 'ice', start: 11, end: 20, color: '#66ccff', image: 'Images/IceMountains.png' },
         { name: 'Volcano', key: 'volcano', start: 21, end: 30, color: '#ff6633', image: null },
         { name: 'Demon Realm', key: 'demon', start: 31, end: 40, color: '#aa44ff', image: null },
         { name: 'Angel Sanctuary', key: 'angel', start: 41, end: 50, color: '#ffdd44', image: null },

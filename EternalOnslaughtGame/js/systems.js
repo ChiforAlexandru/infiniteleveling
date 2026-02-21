@@ -14,8 +14,8 @@ game.spriteAnimations = {
 
 game.loadSprites = function() {
     const spriteConfigs = [
-        { key: 'survivor', src: 'images/sprites/survivor.png', cols: 7, rows: 3, autoDetectFrameSize: true },
-        { key: 'necromancer', src: 'images/sprites/Necromancer64.png', frameWidth: 64, frameHeight: 64, singleFrame: true }
+        { key: 'survivor', src: 'Images/sprites/survivor.png', cols: 7, rows: 3, autoDetectFrameSize: true },
+        { key: 'necromancer', src: 'Images/sprites/Necromancer64.png', frameWidth: 64, frameHeight: 64, singleFrame: true }
     ];
     
     let loadedCount = 0;
