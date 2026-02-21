@@ -643,11 +643,11 @@ game.initCharacterSelection = function() {
         let rightContent = '';
         let showImage = false;
         if (char.name === 'Necromancer' && isUnlocked) {
-            leftImage = `<div style="flex:0 0 120px; width:120px; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #1a0a2a 60%, #2a1a3a 100%); border-radius:12px 0 0 12px; overflow:hidden; box-shadow: 0 0 16px 4px #000 inset;"><img src='Images/Necromancer.png' alt='Necromancer' style='width:auto; height:60%; max-width:80%; max-height:80%; object-fit:contain; filter:drop-shadow(0 0 16px #00ffcc);'/></div>`;
+            leftImage = `<div style="flex:0 0 120px; width:120px; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #1a0a2a 60%, #2a1a3a 100%); border-radius:12px 0 0 12px; overflow:hidden; box-shadow: 0 0 16px 4px #000 inset;"><img src='images/Necromancer.png' alt='Necromancer' style='width:auto; height:60%; max-width:80%; max-height:80%; object-fit:contain; filter:drop-shadow(0 0 16px #00ffcc);'/></div>`;
             showImage = true;
         }
         if (char.name === 'Summoner' && isUnlocked) {
-            leftImage = `<div style="flex:0 0 120px; width:120px; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #1a0a2a 60%, #3a1a1a 100%); border-radius:12px 0 0 12px; overflow:hidden; box-shadow: 0 0 16px 4px #000 inset;"><img src='Images/summoner.png' alt='Summoner' style='width:auto; height:60%; max-width:80%; max-height:80%; object-fit:contain; filter:drop-shadow(0 0 16px #ffaa00);'/></div>`;
+            leftImage = `<div style="flex:0 0 120px; width:120px; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #1a0a2a 60%, #3a1a1a 100%); border-radius:12px 0 0 12px; overflow:hidden; box-shadow: 0 0 16px 4px #000 inset;"><img src='images/Summoner.png' alt='Summoner' style='width:auto; height:60%; max-width:80%; max-height:80%; object-fit:contain; filter:drop-shadow(0 0 16px #ffaa00);'/></div>`;
             showImage = true;
         }
         // Right content (name, desc, stats)
@@ -753,8 +753,8 @@ game.renderStoryMap = function() {
 
     // Zone configurations
     const zones = [
-        { name: 'Forest', key: 'forest', start: 1, end: 10, color: '#00ff88', image: 'Images/DarkForest.png' },
-        { name: 'Ice Realm', key: 'ice', start: 11, end: 20, color: '#66ccff', image: 'Images/IceMountains.png' },
+        { name: 'Forest', key: 'forest', start: 1, end: 10, color: '#00ff88', image: 'images/DarkForest.png' },
+        { name: 'Ice Realm', key: 'ice', start: 11, end: 20, color: '#66ccff', image: 'images/IceMountains.png' },
         { name: 'Volcano', key: 'volcano', start: 21, end: 30, color: '#ff6633', image: null },
         { name: 'Demon Realm', key: 'demon', start: 31, end: 40, color: '#aa44ff', image: null },
         { name: 'Angel Sanctuary', key: 'angel', start: 41, end: 50, color: '#ffdd44', image: null },

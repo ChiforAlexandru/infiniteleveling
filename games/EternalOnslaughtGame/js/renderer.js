@@ -44,7 +44,7 @@ game.drawSkeleton = function(enemy) {
     // Draw goblin using GoblinWalk.png sprite, fallback to circle if not loaded
     if (!game.goblinSprite) {
         game.goblinSprite = new Image();
-        game.goblinSprite.src = 'Images/sprites/GoblinWalk.png';
+        game.goblinSprite.src = 'images/sprites/GoblinWalk.png';
     }
     const spriteSize = 32;
     const drawSize = enemy.radius * 2;
