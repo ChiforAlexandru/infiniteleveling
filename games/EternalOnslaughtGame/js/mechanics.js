@@ -147,7 +147,14 @@ game.showLevelUpScreen = function() {
         if (p.isCursed) {
             card.classList.add('cursed');
         }
+        // Add image element, fallback to alt text if not found
+        let imgSrc = p.imgSrc || p.image || p.classImg || '';
+        if (!imgSrc && p.name) {
+            // Try to guess image path from name
+            imgSrc = `Images/sprites/${p.name.replace(/\s+/g, '')}64.png`;
+        }
         card.innerHTML = `
+            <img class="card-img" src="${imgSrc}" alt="${p.name}" onerror="this.style.display='none';" style="width:64px;height:64px;margin:auto;display:block;" />
             <div class="card-title">${p.name}</div>
             <div class="card-desc">${p.description}</div>
             <div class="card-stats">${p.stats}</div>
@@ -369,6 +376,7 @@ game.openChest = function(chestIndex) {
             card.classList.add('cursed');
         }
         card.innerHTML = `
+            <img class="card-img" src="${imgSrc}" alt="${p.name}" onerror="this.style.display='none';" style="width:64px;height:64px;margin:auto;display:block;" />
             <div class="card-title">${p.name}</div>
             <div class="card-desc">${p.description}</div>
             <div class="card-stats">${p.stats}</div>

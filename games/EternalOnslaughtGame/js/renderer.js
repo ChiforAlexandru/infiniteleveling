@@ -1211,6 +1211,9 @@ game.draw = function() {
     }
     
     // Draw bosses (larger and more dramatic)
+    if (typeof game.drawBosses === 'function') {
+        game.drawBosses.call(this);
+    }
     this.bosses.forEach(boss => {
         // Giant shadow
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';

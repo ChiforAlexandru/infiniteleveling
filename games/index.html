@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Games | Infinite Leveling Studio</title>
+    <link rel="stylesheet" href="../assets/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .games-header {
+            text-align: center;
+            padding: 48px 0 24px 0;
+            font-size: 2.5rem;
+            font-family: 'Orbitron', sans-serif;
+            color: #00ffff;
+            letter-spacing: 2px;
+            text-shadow: 0 0 16px #00ffff88;
+        }
+        .games-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+        .game-card {
+            background: #23234b;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0,255,255,0.15);
+            padding: 32px 24px;
+            width: 340px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        .game-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 16px 48px rgba(0,255,255,0.25);
+        }
+        .game-card img {
+            width: 220px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 18px;
+            box-shadow: 0 0 16px #00ffff44;
+        }
+        .game-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: #00ffff;
+            margin-bottom: 12px;
+        }
+        .game-card p {
+            font-size: 1rem;
+            color: #c0c0ff;
+            margin-bottom: 24px;
+        }
+        .play-btn {
+            display: inline-block;
+            background: linear-gradient(90deg, #00ffff 0%, #00ff88 100%);
+            color: #23234b;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 12px 32px;
+            border-radius: 32px;
+            text-decoration: none;
+            box-shadow: 0 4px 16px #00ffff44;
+            transition: background 0.2s, color 0.2s;
+        }
+        .play-btn:hover {
+            background: linear-gradient(90deg, #00ff88 0%, #00ffff 100%);
+            color: #fff;
+        }
+        .card-effect {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 24px;
+            pointer-events: none;
+            box-shadow: 0 0 32px #00ffff44 inset;
+            opacity: 0.2;
+        }
+        .games-footer {
+            text-align: center;
+            margin-top: 48px;
+            color: #aaa;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="games-header">Our Games</div>
+    <div class="games-list">
+        <div class="game-card">
+            <img src="../Images/EternalOnslaught.png" alt="Eternal Onslaught">
+            <h3>Eternal Onslaught</h3>
+            <p>Face endless waves of monstrous horrors in a dark fantasy world. Survive, adapt, and grow stronger as the onslaught never ceases. Every run is unique, every moment is a fight for survival.</p>
+            <a class="play-btn" href="/games/EternalOnslaughtGame/game.html">Go to Game Page</a>
+            <div class="card-effect"></div>
+        </div>
+        <!-- Add more game cards here as you release new games -->
+    </div>
+    <div class="games-footer">&copy; 2026 Infinite Leveling Studio. All rights reserved.</div>
+</body>
+</html>

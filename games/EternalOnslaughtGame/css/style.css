@@ -296,13 +296,30 @@ canvas {
 
 .card-title {
     font-family: 'Orbitron', monospace;
-    font-size: 22px;
+    font-size: 13px;
     font-weight: 600;
     margin: 0;
     color: #00ffff;
     text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
-    line-height: 1.2;
+    line-height: 1.05;
     word-wrap: break-word;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    padding: 0 4px;
+    max-width: 100%;
+}
+.card-img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    margin: 0 auto 4px auto;
+    display: block;
+    border-radius: 8px;
+    background: #181c2a;
+    box-shadow: 0 0 8px #00ffff44;
+}
 }
 
 .card-desc {

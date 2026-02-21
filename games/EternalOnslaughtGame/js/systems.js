@@ -28,6 +28,13 @@ game.drawBosses = function() {
                 ctx.fillStyle = '#fff';
                 ctx.textAlign = 'center';
                 ctx.fillText(boss.name, boss.x, y - 8);
+
+                // HP text
+                ctx.font = 'bold 15px Chakra Petch, monospace';
+                ctx.fillStyle = '#00ff88';
+                ctx.textAlign = 'center';
+                const hpText = `${Math.ceil(boss.health)} / ${Math.ceil(boss.maxHealth)}`;
+                ctx.fillText(hpText, boss.x, y + barHeight - 2);
                 ctx.restore();
             }
         }
