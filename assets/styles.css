@@ -239,6 +239,64 @@ button:hover {
 }
 
 footer {
+    .achievements-screen {
+        position: relative;
+    }
+    .close-btn {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #b97aff 0%, #6c2ed7 100%);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        font-size: 1.6rem;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 2px 8px #6c2ed733;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        transition: background 0.2s, transform 0.2s;
+    }
+    .close-btn:hover {
+        background: linear-gradient(135deg, #6c2ed7 0%, #b97aff 100%);
+        color: #00ffff;
+        transform: scale(1.1);
+    }
+    /* Close button styles for modals/menus */
+    .close-btn {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #b97aff 0%, #6c2ed7 100%);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        font-size: 1.6rem;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 2px 8px #6c2ed733;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        transition: background 0.2s, transform 0.2s;
+    }
+    .close-btn:hover {
+        background: linear-gradient(135deg, #6c2ed7 0%, #b97aff 100%);
+        color: #00ffff;
+        transform: scale(1.1);
+    }
+    /* Specific for achievements menu if needed */
+    .achievements-close-btn {
+        box-shadow: 0 0 16px #b97aff88;
+    }
     text-align: center;
     padding: 30px 0 20px 0;
     background: linear-gradient(90deg, #6c2ed7 60%, #23272f 100%);

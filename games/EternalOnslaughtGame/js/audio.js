@@ -11,7 +11,9 @@ game.playMusic = function() {
     const bossMusic2 = document.getElementById('bossMusic2');
     const selectedMusic = this.selectedNormalTrack === 'endless' ? music1 : music2;
     
-    selectedMusic.volume = this.masterVolume;
+    // Use effective music volume for endless mode
+    const effectiveMusicVol = this.musicVolume * this.masterVolume;
+    selectedMusic.volume = effectiveMusicVol;
     selectedMusic.muted = false;
     
     // Stop all music (both normal and boss)
@@ -139,21 +141,7 @@ game.toggleMute = function() {
     const button = document.getElementById('muteButton');
     
     // Check any audio element to determine current mute state
-    const isMuted = music1.muted;
-    
-    if (isMuted) {
-        music1.muted = false;
-        music2.muted = false;
-        bossMusic1.muted = false;
-        bossMusic2.muted = false;
-        button.textContent = '🔊';
-    } else {
-        music1.muted = true;
-        music2.muted = true;
-        bossMusic1.muted = true;
-        bossMusic2.muted = true;
-        button.textContent = '🔇';
-    }
+        // In-game mute button removed; only main menu audio settings are respected
 };
 
 game.setVolume = function(value) {
@@ -169,9 +157,7 @@ game.setMasterVolume = function(value) {
     if (document.getElementById('masterVolumeSlider')) {
         document.getElementById('masterVolumeSlider').value = value;
     }
-    if (document.getElementById('volumeSlider')) {
-        document.getElementById('volumeSlider').value = value;
-    }
+        // In-game volume slider removed; only main menu audio settings are respected
     if (document.getElementById('menuVolumeSlider')) {
         document.getElementById('menuVolumeSlider').value = value;
     }
@@ -560,8 +546,8 @@ game.switchToTrack = function(audioElement) {
     bossMusic2.currentTime = 0;
     
     // Play the new track
-    const masterVol = this.masterVolume || 0.5;
-    audioElement.volume = masterVol;
+    const effectiveMusicVol = this.musicVolume * (this.masterVolume || 0.5);
+    audioElement.volume = effectiveMusicVol;
     audioElement.currentTime = 0;
     audioElement.play().catch(e => console.log('Track switch failed:', e));
 };

@@ -80,10 +80,39 @@ game.showStatsScreen = function() {
             };
         }
         const stats = game.calculateTotalStats(previewPlayer);
+        const statDescriptions = {
+            'Max Health': 'Total hit points. Higher means more survivability.',
+            'Damage': 'Base attack damage per hit.',
+            'Speed': 'Movement speed (units/sec).',
+            'Fire Rate': 'Lower is faster. Time between attacks (ms).',
+            'Regen': 'Health regenerated per second.',
+            'Lifesteal': 'Percent of damage converted to health.',
+            'Extra Damage': 'Bonus damage against bosses or elites.',
+            'Range': 'Projectile or attack range (pixels).',
+            'Crit Chance': 'Chance to deal double damage.',
+            'Armor': 'Reduces incoming damage.',
+            'Dodge': 'Chance to avoid attacks.',
+            'XP Gain': 'Bonus experience earned.',
+            'Power': 'Overall stat multiplier.',
+            'Skill Points': 'Points available for upgrades.',
+            'Relics': 'Number of relics equipped.',
+            'Elites Killed': 'Total elite enemies defeated.',
+            'Bosses Killed': 'Total bosses defeated.'
+        };
         html = '<table style="width:100%;text-align:left;">';
+        html += '<tr><th>Stat</th><th>Value</th><th>Details</th></tr>';
         for (let stat of Object.keys(stats)) {
-            html += `<tr><td><b>${stat}</b></td><td>${stats[stat].total}</td><td style='font-size:12px;color:#aaa;'>${stats[stat].breakdown}</td></tr>`;
+            html += `<tr><td title="${statDescriptions[stat] || ''}"><b>${stat}</b></td><td>${stats[stat].total}</td><td style='font-size:12px;color:#aaa;'>${stats[stat].breakdown} <span style='color:#b97aff;'>${statDescriptions[stat] || ''}</span></td></tr>`;
         }
+        // Add extra stats if available
+        html += `<tr><td><b>Armor</b></td><td>${previewPlayer.armor || 0}</td><td style='font-size:12px;color:#aaa;'>Reduces incoming damage.</td></tr>`;
+        html += `<tr><td><b>Dodge</b></td><td>${previewPlayer.dodgeChance ? (previewPlayer.dodgeChance * 100).toFixed(1) + '%' : '0%'}</td><td style='font-size:12px;color:#aaa;'>Chance to avoid attacks.</td></tr>`;
+        html += `<tr><td><b>XP Gain</b></td><td>${previewPlayer.xpBonus ? (previewPlayer.xpBonus * 100).toFixed(1) + '%' : '0%'}</td><td style='font-size:12px;color:#aaa;'>Bonus experience earned.</td></tr>`;
+        html += `<tr><td><b>Power</b></td><td>${previewPlayer.power || 1}</td><td style='font-size:12px;color:#aaa;'>Overall stat multiplier.</td></tr>`;
+        html += `<tr><td><b>Skill Points</b></td><td>${game.skills.points || 0}</td><td style='font-size:12px;color:#aaa;'>Points available for upgrades.</td></tr>`;
+        html += `<tr><td><b>Relics</b></td><td>${previewPlayer.relics ? previewPlayer.relics.length : 0}</td><td style='font-size:12px;color:#aaa;'>Number of relics equipped.</td></tr>`;
+        html += `<tr><td><b>Elites Killed</b></td><td>${game.runStats.elitesKilled || 0}</td><td style='font-size:12px;color:#aaa;'>Total elite enemies defeated.</td></tr>`;
+        html += `<tr><td><b>Bosses Killed</b></td><td>${game.runStats.bossesKilled || 0}</td><td style='font-size:12px;color:#aaa;'>Total bosses defeated.</td></tr>`;
         html += '</table>';
     }
     document.getElementById('statsBreakdown').innerHTML = html;
@@ -360,6 +389,7 @@ style.textContent = `.ui-focused { outline: 3px solid #00ffcc !important; box-sh
 document.head.appendChild(style);
 
 // Example: Activate UI nav for skill tree when opened
+// Achievements menu UI nav activation
 const origShowSkillTree = game.showSkillTree;
 game.showSkillTree = function() {
     origShowSkillTree.call(this);
@@ -719,6 +749,15 @@ game.startGame = function() {
             this.hideDailyChallengeHud();
         }
         
+        // Ensure music volume is set to user preference for endless mode
+        if (this.mode === 'endless') {
+            const savedMusicVolume = localStorage.getItem('musicVolume');
+            if (savedMusicVolume !== null) {
+                this.musicVolume = Math.min(parseInt(savedMusicVolume) / 100 * 2.5, 1.0);
+            } else {
+                this.musicVolume = 1.0;
+            }
+        }
         // Start music with user interaction
         this.playMusic();
         console.log('Game started successfully');

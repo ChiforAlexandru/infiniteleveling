@@ -27,7 +27,7 @@
     0% { opacity: 0; transform: translateY(-50%) scale(0.85); }
     100% { opacity: 1; transform: translateY(-50%) scale(1); }
 }
-}
+
 .stats-title {
     font-size: 2.2em;
     margin-bottom: 18px;
@@ -57,7 +57,7 @@
     background: #00ffff44;
     box-shadow: 0 4px 16px #00ffff77;
 }
-}
+
 #statsBreakdown {
     width: 100%;
     font-size: 1.13em;
@@ -97,7 +97,7 @@
     text-align: left;
     font-style: italic;
 }
-}
+
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght:700;900&family=Chakra+Petch:wght:400;600&display=swap');
 
 * {
@@ -320,7 +320,7 @@ canvas {
     background: #181c2a;
     box-shadow: 0 0 8px #00ffff44;
 }
-}
+
 
 .card-desc {
     font-size: 12px;
@@ -362,7 +362,7 @@ canvas {
     box-shadow: 0 12px 30px rgba(255, 150, 0, 0.5);
 }
 
-.reroll-button:active {"}}]
+.reroll-button:active {
     transform: translateY(-1px) scale(0.98);
     box-shadow: 0 8px 24px rgba(255, 150, 0, 0.6);
 }

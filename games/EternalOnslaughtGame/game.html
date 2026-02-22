@@ -34,7 +34,7 @@
     
     <!-- Boss Music 2 -->
     <audio id="bossMusic2" loop preload="auto">
-        <source src="audio/Endless_Boss_Waves.mp3" type="audio/mpeg">
+        <source src="audio/Endless_Boss_Wave.mp3" type="audio/mpeg">
         Your browser does not support audio playback.
     </audio>
     
@@ -240,11 +240,7 @@
     </div>
     
     <!-- Music Control -->
-    <div class="music-control">
-        <button class="mute-button" id="muteButton" onclick="game.toggleMute()">🔊</button>
-        <input type="range" min="0" max="100" value="50" class="volume-slider" id="volumeSlider" oninput="game.setVolume(this.value)">
-        <button class="music-selector-button" onclick="game.showMusicSelector()" title="Music Selection">♪</button>
-    </div>
+        <!-- Music Control removed: Only main menu audio settings are respected -->
     
     <!-- Music Selector Screen -->
     <div class="music-selector-screen" id="musicSelectorScreen">
@@ -344,7 +340,7 @@
 
     <!-- Achievements Screen -->
     <div class="achievements-screen" id="achievementsScreen" style="display: none;">
-        <button class="close-btn" onclick="game.hideAchievements()">✕</button>
+        <button class="close-btn achievements-close-btn" onclick="game.hideAchievements()" aria-label="Close Achievements">✕</button>
         <div class="achievements-title">🏆 ACHIEVEMENTS</div>
         <div class="achievements-grid" id="achievementsGrid"></div>
     </div>

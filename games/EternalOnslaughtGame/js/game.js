@@ -23,6 +23,10 @@ setTimeout(function() {
     };
 }, 0);
 const game = {
+        // ...existing code...
+        hideAchievements: function() {
+            document.getElementById('achievementsScreen').style.display = 'none';
+        },
     running: false,
     paused: false,
     player: null,
