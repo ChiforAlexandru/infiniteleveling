@@ -151,9 +151,11 @@ h2 {
 
 .games-list {
     display: flex;
+    flex-direction: row;
     gap: 40px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
+    align-items: flex-start;
 }
 
 .game-card {
