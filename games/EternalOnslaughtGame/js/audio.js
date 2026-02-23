@@ -99,14 +99,15 @@ game.switchMusic = function() {
     const music2 = document.getElementById('bgMusic2');
     music1.pause();
     music2.pause();
-    
-    // Play the selected track
+
+    // Play the selected track with correct volume
     const selectedTrack = this.selectedNormalTrack === 'endless' ? music1 : music2;
-    selectedTrack.volume = this.masterVolume;
+    const effectiveMusicVol = this.musicVolume * this.masterVolume;
+    selectedTrack.volume = effectiveMusicVol;
     selectedTrack.currentTime = 0;
-    
+
     selectedTrack.play().catch(e => console.log('Music switch failed:', e));
-    
+
     // Update current track indicator
     this.currentMusicTrack = this.selectedNormalTrack === 'endless' ? 1 : 2;
     this.updateNowPlayingDisplay();

@@ -737,8 +737,7 @@ canvas {
 
 .start-title {
     font-family: 'Orbitron', monospace;
-    font-size: 6vw;
-    max-font-size: 52px;
+    font-size: clamp(28px, 6vw, 52px);
     font-weight: 900;
     color: #00ffff;
     text-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
@@ -747,8 +746,7 @@ canvas {
 }
 
 .start-subtitle {
-    font-size: 2.5vw;
-    max-font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px);
     color: #a0b0ff;
     margin: 5px 0;
     text-align: center;
@@ -756,8 +754,7 @@ canvas {
 
 .start-stats {
     margin-top: 20px;
-    font-size: 3vw;
-    max-font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px);
     color: #ffaa00;
     text-align: center;
 }
@@ -1300,11 +1297,11 @@ canvas {
     border-radius: 12px;
     padding: 20px;
     cursor: pointer;
-    width: 330px;
-    min-height: 250px;
+    width: 450px;
+    min-height: 300px;
     text-align: center;
     transition: all 0.3s ease;
-    font-size: 2.4em;
+    font-size: 1.2em;
     position: relative;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }

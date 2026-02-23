@@ -1,5 +1,80 @@
 // Dynamically add Character Stats button after scripts are loaded
 window.addEventListener('DOMContentLoaded', function() {
+        // Add mobile joystick overlay if on mobile
+        if (/Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            const joystick = document.createElement('div');
+            joystick.id = 'mobileJoystick';
+            joystick.style.position = 'fixed';
+            joystick.style.left = '20px';
+            joystick.style.bottom = '20px';
+            joystick.style.width = '120px';
+            joystick.style.height = '120px';
+            joystick.style.background = 'rgba(0,0,0,0.2)';
+            joystick.style.borderRadius = '50%';
+            joystick.style.zIndex = '9999';
+            joystick.style.touchAction = 'none';
+            joystick.style.display = 'flex';
+            joystick.style.alignItems = 'center';
+            joystick.style.justifyContent = 'center';
+            joystick.innerHTML = '<div id="joystickKnob" style="width:60px;height:60px;background:#00ffd0;border-radius:50%;position:absolute;left:30px;top:30px;transition:left 0.1s,top 0.1s;"></div>';
+            document.body.appendChild(joystick);
+
+            let knob = document.getElementById('joystickKnob');
+            let dragging = false;
+            let startX = 0, startY = 0;
+            let centerX = 60, centerY = 60;
+
+            joystick.addEventListener('touchstart', function(e) {
+                dragging = true;
+                const touch = e.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+            });
+            joystick.addEventListener('touchmove', function(e) {
+                if (!dragging) return;
+                const touch = e.touches[0];
+                let dx = touch.clientX - startX;
+                let dy = touch.clientY - startY;
+                // Clamp knob movement
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist > 40) {
+                    dx = dx / dist * 40;
+                    dy = dy / dist * 40;
+                }
+                knob.style.left = (centerX + dx) + 'px';
+                knob.style.top = (centerY + dy) + 'px';
+                // Convert dx/dy to movement direction
+                let moveX = 0, moveY = 0;
+                if (Math.abs(dx) > 10) moveX = dx > 0 ? 1 : -1;
+                if (Math.abs(dy) > 10) moveY = dy > 0 ? 1 : -1;
+                // Move player
+                if (typeof game.player !== 'undefined') {
+                    game.player.moveDirection = { x: moveX, y: moveY };
+                }
+            });
+            joystick.addEventListener('touchend', function(e) {
+                dragging = false;
+                knob.style.left = centerX + 'px';
+                knob.style.top = centerY + 'px';
+                if (typeof game.player !== 'undefined') {
+                    game.player.moveDirection = { x: 0, y: 0 };
+                }
+            });
+        }
+    // Mobile movement handler in updatePlayer
+    const originalUpdatePlayer = game.updatePlayer;
+    game.updatePlayer = function(deltaTime) {
+        // Handle mobile movement
+        if (/Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            if (this.player && this.player.moveDirection) {
+                // Apply movement direction
+                this.player.x += this.player.moveDirection.x * this.player.speed * deltaTime * 0.05;
+                this.player.y += this.player.moveDirection.y * this.player.speed * deltaTime * 0.05;
+            }
+        }
+        // Call original updatePlayer logic
+        if (originalUpdatePlayer) originalUpdatePlayer.call(this, deltaTime);
+    };
     const btn = document.createElement('button');
     btn.className = 'button';
     btn.innerText = '🧬 Character Stats';
