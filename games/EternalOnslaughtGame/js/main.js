@@ -640,6 +640,7 @@ game.restart = function() {
     document.getElementById('objectiveHud').style.display = 'none';
     document.getElementById('hud').style.display = 'none';
     document.getElementById('startScreen').style.display = 'flex';
+    if (this.hideRunStats) this.hideRunStats();
     
     // Hide daily challenge HUD when returning to menu
     if (this.hideDailyChallengeHud) this.hideDailyChallengeHud();
@@ -856,6 +857,7 @@ game.showStoryMap = function() {
 game.hideStoryMap = function() {
     document.getElementById('storyMapScreen').style.display = 'none';
     document.getElementById('startScreen').style.display = 'flex';
+    this.stopMapParticles();
 };
 
 game.renderStoryMap = function() {
@@ -920,12 +922,17 @@ game.renderStoryMap = function() {
             if (isBoss) classes += ' boss';
             if (isCompleted) classes += ' completed';
 
-            const onClick = isLocked ? '' : `onclick="game.selectStoryLevel(${level})"`;
+            const onClick = isLocked ? '' : `onclick="game.clickLevelNode(this, ${level})"`;
+
+            // Child elements for VFX (current arrow + completed star)
+            let childHtml = `<span>${level}</span>`;
+            if (isCurrent) childHtml += `<span class="current-arrow">▶</span>`;
+            if (isCompleted) childHtml += `<span class="completed-star">⭐</span>`;
 
             html += `
                 <div class="story-level-row ${position}">
-                    <div class="${classes}" ${onClick} style="--zone-color: ${zone.color}">
-                        <span>${level}</span>
+                    <div class="${classes}" style="--zone-color: ${zone.color}; animation-delay: ${(level - zone.start) * 0.06}s">
+                        ${childHtml}
                     </div>
                 </div>
             `;
@@ -940,6 +947,12 @@ game.renderStoryMap = function() {
 
     container.innerHTML = html;
 
+    // Add click handlers to unlocked & current nodes
+    container.querySelectorAll('.story-level-node.unlocked, .story-level-node.current').forEach(node => {
+        const levelNum = parseInt(node.querySelector('span').textContent);
+        node.addEventListener('click', function() { game.clickLevelNode(this, levelNum); });
+    });
+
     // Scroll to current level
     setTimeout(() => {
         const currentNode = container.querySelector('.story-level-node.current');
@@ -947,6 +960,88 @@ game.renderStoryMap = function() {
             currentNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }, 100);
+
+    // Start background particle effect
+    this.startMapParticles();
+};
+
+// ── Click handler with VFX ripple ──
+game.clickLevelNode = function(el, level) {
+    el.classList.remove('ripple');
+    void el.offsetWidth; // force reflow
+    el.classList.add('ripple');
+    setTimeout(() => this.selectStoryLevel(level), 300);
+};
+
+// ── Story Map floating particle system ──
+game._mapParticlesRunning = false;
+game._mapParticles = [];
+
+game.startMapParticles = function() {
+    const canvas = document.getElementById('storyMapParticles');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const screen = document.getElementById('storyMapScreen');
+
+    canvas.width = screen.clientWidth;
+    canvas.height = screen.clientHeight;
+
+    if (this._mapParticlesRunning) return;
+    this._mapParticlesRunning = true;
+
+    const colors = ['#00ffaa','#66ccff','#ff6633','#aa44ff','#ffdd44','#ff00ff','#00ffff','#ffaa00'];
+    const particles = this._mapParticles;
+    particles.length = 0;
+
+    for (let i = 0; i < 50; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 2.5 + 1,
+            dx: (Math.random() - 0.5) * 0.4,
+            dy: -Math.random() * 0.5 - 0.15,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            alpha: Math.random() * 0.5 + 0.2,
+            twinkle: Math.random() * Math.PI * 2
+        });
+    }
+
+    const animate = () => {
+        if (!this._mapParticlesRunning) return;
+        if (screen.style.display === 'none') { this._mapParticlesRunning = false; return; }
+
+        canvas.width = screen.clientWidth;
+        canvas.height = screen.clientHeight;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (const p of particles) {
+            p.x += p.dx;
+            p.y += p.dy;
+            p.twinkle += 0.03;
+            const a = p.alpha * (0.5 + 0.5 * Math.sin(p.twinkle));
+
+            if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
+            if (p.x < -10) p.x = canvas.width + 10;
+            if (p.x > canvas.width + 10) p.x = -10;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = a;
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = p.color;
+            ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+
+        requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+};
+
+game.stopMapParticles = function() {
+    this._mapParticlesRunning = false;
 };
 
 game.selectStoryLevel = function(level) {
@@ -1165,6 +1260,7 @@ game.retryLevel = function() {
     // Hide game over screen before retrying
     document.getElementById('gameOverScreen').style.display = 'none';
     document.getElementById('objectiveHud').style.display = 'none';
+    if (this.hideRunStats) this.hideRunStats();
     // Retry the current level (works for both story and endless modes)
     this.startGame();
 };

@@ -1,3 +1,52 @@
+game.drawGoblin = function(enemy) {
+    // Draw goblin using goblin.png sprite, fallback to circle if not loaded
+    if (!game.goblinPngSprite) {
+        game.goblinPngSprite = new Image();
+        game.goblinPngSprite.src = 'images/sprites/GoblinNoBackground.png';
+    }
+    ctx.save();
+    ctx.translate(enemy.x, enemy.y);
+    const drawSize = enemy.radius * 2 * 3;
+    if (game.goblinPngSprite.complete && game.goblinPngSprite.naturalWidth > 0) {
+        // Draw the PNG scaled to enemy size, centered
+        ctx.drawImage(
+            game.goblinPngSprite,
+            0, 0, game.goblinPngSprite.naturalWidth, game.goblinPngSprite.naturalHeight,
+            -drawSize/2, -drawSize/2, drawSize, drawSize
+        );
+    } else {
+        // Fallback: draw a green circle
+        ctx.fillStyle = enemy.color || '#339933';
+        ctx.beginPath();
+        ctx.arc(0, 0, enemy.radius, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.restore();
+};
+game.drawOrc = function(enemy) {
+    // Draw orc using preloaded sprite, fallback to circle if not loaded
+    const spriteObj = game.sprites && game.sprites.orc;
+    const sprite = spriteObj && spriteObj.image;
+    const spriteLoaded = sprite && sprite.complete && sprite.naturalWidth > 0;
+    const spriteSize = 32;
+    const drawSize = enemy.radius * 2;
+    ctx.save();
+    ctx.translate(enemy.x, enemy.y);
+    if (spriteLoaded) {
+        ctx.drawImage(
+            sprite,
+            0, 0, spriteSize, spriteSize, // source
+            -drawSize/2, -drawSize/2, drawSize, drawSize // destination
+        );
+    } else {
+        // Fallback: draw a green circle
+        ctx.fillStyle = enemy.color || '#669944';
+        ctx.beginPath();
+        ctx.arc(0, 0, enemy.radius, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.restore();
+};
 game.drawZombie = function(enemy) {
     // Body
     ctx.fillStyle = enemy.color;
@@ -531,24 +580,6 @@ game.drawVampire = function(enemy) {
     ctx.shadowBlur = 0;
 };
 
-game.drawGoblin = function(enemy) {
-    // Draw goblin using GoblinWalk.png sprite
-    if (!game.goblinSprite) {
-        game.goblinSprite = new Image();
-        game.goblinSprite.src = 'Images/sprites/GoblinWalk.png';
-    }
-    // Default to 32x32 sprite size, scale to enemy.radius
-    const spriteSize = 32;
-    const drawSize = enemy.radius * 2;
-    ctx.save();
-    ctx.translate(enemy.x, enemy.y);
-    ctx.drawImage(
-        game.goblinSprite,
-        0, 0, spriteSize, spriteSize, // source
-        -drawSize/2, -drawSize/2, drawSize, drawSize // destination
-    );
-    ctx.restore();
-};
 
 game.drawWerewolf = function(enemy) {
     // Furry brown creature
@@ -1258,16 +1289,32 @@ game.draw = function() {
     this.projectiles.forEach(proj => {
         if (proj.x < viewLeft || proj.x > viewRight || 
             proj.y < viewTop || proj.y > viewBottom) return;
-        const projColor = proj.isCrit ? '#ffff00' : '#00ffff';
         const projSize = proj.isCrit ? proj.radius * 1.5 : proj.radius;
-        
-        ctx.fillStyle = projColor;
-        ctx.shadowBlur = proj.isCrit ? 12 : 8;
-        ctx.shadowColor = projColor;
+        ctx.save();
+        ctx.translate(proj.x, proj.y);
+        // Create a radial gradient for a glowing orb effect
+        const gradient = ctx.createRadialGradient(0, 0, projSize * 0.2, 0, 0, projSize);
+        if (proj.isCrit) {
+            gradient.addColorStop(0, '#fffbe0');
+            gradient.addColorStop(0.5, '#ffe066');
+            gradient.addColorStop(1, '#ff8800');
+        } else {
+            gradient.addColorStop(0, '#e0f7ff');
+            gradient.addColorStop(0.5, '#66d0ff');
+            gradient.addColorStop(1, '#0088ff');
+        }
+        ctx.shadowBlur = proj.isCrit ? 24 : 16;
+        ctx.shadowColor = proj.isCrit ? '#ffe066' : '#66d0ff';
         ctx.beginPath();
-        ctx.arc(proj.x, proj.y, projSize, 0, Math.PI * 2);
+        ctx.arc(0, 0, projSize, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
         ctx.fill();
+        // Add a white outline for extra pop
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+        ctx.stroke();
         ctx.shadowBlur = 0;
+        ctx.restore();
     });
     
     // Draw orbitals

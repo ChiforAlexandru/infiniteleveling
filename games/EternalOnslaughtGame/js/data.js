@@ -4,7 +4,7 @@ game.testZoneConfig = {
     width: 800,
     height: 800,
     background: '#222244',
-    enemies: ['goblin', 'zombie', 'skeleton', 'slime'],
+    enemies: ['goblin'],
     // Add more test features as needed
     features: [
         { type: 'obstacle', x: 400, y: 400, radius: 60 },

@@ -163,7 +163,7 @@
         <div class="game-over-stats" style="color: #ffaa00; font-size: 32px; margin-top: 20px;">
             True XP Gained: <span id="trueXpGained">0</span>
         </div>
-        <div>
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
             <button class="button" onclick="game.showSkillTree()">Skill Tree</button>
             <button class="button" onclick="game.retryLevel()">Retry</button>
             <button class="button" id="storyMapBtn" onclick="game.backToStoryMap()" style="display: none;">🗺️ Level Map</button>
@@ -455,6 +455,7 @@
 
     <!-- Story Map Screen (Candy Crush Style) -->
     <div class="story-map-screen" id="storyMapScreen" style="display: none;">
+        <canvas id="storyMapParticles"></canvas>
         <button class="story-map-close" onclick="game.hideStoryMap()">✕</button>
         <div class="story-map-title">📖 STORY MODE</div>
         <div class="story-map-stats">

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Evolution</title>
+    <link rel="stylesheet" href="chess.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Main Menu Screen -->
+    <div id="menu-screen" class="screen active">
+        <div class="menu-content">
+            <div class="menu-piece-deco left">\u265E</div>
+            <div class="menu-piece-deco right">\u2658</div>
+            <h1 class="menu-title">Chess<br><span class="title-accent">Evolution</span></h1>
+            <p class="menu-subtitle">Master the board. Evolve your game.</p>
+            <div class="menu-buttons">
+                <button id="play-human-btn" class="menu-btn primary-btn">VS HUMAN</button>
+                <button id="play-ai-btn" class="menu-btn primary-btn ai-btn">VS AI &#9823;</button>
+                <button id="settings-btn" class="menu-btn">SETTINGS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Screen -->
+    <div id="settings-screen" class="screen">
+        <div class="settings-content">
+            <h2 class="settings-title">Settings</h2>
+            <div class="settings-list">
+                <label class="setting-row">
+                    <span class="setting-label">Drag &amp; Drop Pieces</span>
+                    <input type="checkbox" id="opt-dragdrop" class="toggle-input">
+                    <span class="toggle-slider"></span>
+                </label>
+                <label class="setting-row">
+                    <span class="setting-label">Show Legal Moves</span>
+                    <input type="checkbox" id="opt-legalmoves" class="toggle-input" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label class="setting-row">
+                    <span class="setting-label">Highlight Last Move</span>
+                    <input type="checkbox" id="opt-lastmove" class="toggle-input" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label class="setting-row">
+                    <span class="setting-label">Board Coordinates</span>
+                    <input type="checkbox" id="opt-coords" class="toggle-input" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label class="setting-row">
+                    <span class="setting-label">Board Theme</span>
+                    <select id="opt-theme" class="setting-select">
+                        <option value="classic">Classic</option>
+                        <option value="blue">Blue Ice</option>
+                        <option value="green">Emerald</option>
+                        <option value="gray">Gunmetal</option>
+                    </select>
+                </label>
+            </div>
+            <div class="setting-row reset-row">
+                <span class="setting-label">Reset AI Progress</span>
+                <button id="opt-reset-ai" class="setting-btn-sm">RESET</button>
+            </div>
+            <button id="settings-back-btn" class="menu-btn">BACK</button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+        <div id="chess-app">
+            <div id="game-top-bar">
+                <button id="game-menu-btn" class="icon-btn" title="Back to Menu">&#9776;</button>
+                <h1>Chess Evolution</h1>
+                <button id="game-settings-btn" class="icon-btn" title="Settings">&#9881;</button>
+            </div>
+            <div id="ai-info" class="hidden">
+                <div class="ai-info-row">
+                    <div class="ai-stat">
+                        <span class="ai-stat-label">LEVEL</span>
+                        <span id="ai-level-num" class="ai-stat-value">1</span>
+                    </div>
+                    <div class="ai-stat">
+                        <span class="ai-stat-label">ELO</span>
+                        <span id="ai-elo" class="ai-stat-value">800</span>
+                    </div>
+                    <div class="ai-stat">
+                        <span class="ai-stat-label">YOUR RECORD</span>
+                        <span id="ai-record" class="ai-stat-value">0W - 0L - 0D</span>
+                    </div>
+                </div>
+                <div class="ai-xp-bar">
+                    <div id="ai-xp-fill" class="ai-xp-fill"></div>
+                </div>
+            </div>
+            <div id="ai-thinking" class="hidden">
+                <span class="thinking-dots">AI thinking<span>.</span><span>.</span><span>.</span></span>
+            </div>
+            <div id="board-area">
+                <div id="coord-top" class="coord-row"></div>
+                <div id="board-mid">
+                    <div id="coord-left" class="coord-col"></div>
+                    <div id="chessboard"></div>
+                    <div id="coord-right" class="coord-col"></div>
+                </div>
+                <div id="coord-bottom" class="coord-row"></div>
+            </div>
+            <div id="status"></div>
+            <div id="controls">
+                <button id="undo-btn">Undo</button>
+                <button id="reset-btn">New Game</button>
+            </div>
+            <div id="move-history"></div>
+            <div id="promotion-modal" class="hidden">
+                <div id="promotion-choices"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drag ghost (for drag & drop) -->
+    <div id="drag-ghost" class="hidden"></div>
+
+    <script src="chess.js"></script>
+</body>
+</html>

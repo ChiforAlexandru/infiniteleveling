@@ -20,11 +20,13 @@ game.spawnEnemies = function() {
             case 3: x = -30; y = Math.random() * MAP_HEIGHT; break;
         }
 
-        // Only spawn goblins in test zone
+        // Spawn only allowed enemies in test zone
         let enemyType;
         if (this.mode === 'testzone') {
-            enemyType = this.enemyTypes.find(e => e.name === 'goblin');
-            if (!enemyType) return;
+            const allowedEnemies = (this.testZoneConfig && this.testZoneConfig.enemies) || ['goblin'];
+            const possibleTypes = this.enemyTypes.filter(e => allowedEnemies.includes(e.name));
+            if (possibleTypes.length === 0) return;
+            enemyType = possibleTypes[Math.floor(Math.random() * possibleTypes.length)];
         } else {
             enemyType = this.enemyTypes[Math.floor(Math.random() * this.enemyTypes.length)];
         }

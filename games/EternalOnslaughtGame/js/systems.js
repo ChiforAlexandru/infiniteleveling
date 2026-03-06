@@ -58,7 +58,8 @@ game.spriteAnimations = {
 game.loadSprites = function() {
     const spriteConfigs = [
         { key: 'survivor', src: 'images/sprites/survivor.png', cols: 7, rows: 3, autoDetectFrameSize: true },
-        { key: 'necromancer', src: 'images/sprites/Necromancer64.png', frameWidth: 64, frameHeight: 64, singleFrame: true }
+        { key: 'necromancer', src: 'images/sprites/Necromancer64.png', frameWidth: 64, frameHeight: 64, singleFrame: true },
+        { key: 'orc', src: 'images/sprites/Orc/Orc/Orc-Idle.png', frameWidth: 32, frameHeight: 32, singleFrame: true }
     ];
     
     let loadedCount = 0;
@@ -1071,21 +1072,30 @@ game.resetRunStats = function() {
 
 game.showRunStats = function() {
     const statsHtml = `
-        <div class="run-stats-content">
-            <h3>Run Statistics</h3>
-            <div class="stat-row"><span>Damage Dealt:</span><span>${Math.round(this.runStats.damageDealt).toLocaleString()}</span></div>
-            <div class="stat-row"><span>Damage Taken:</span><span>${Math.round(this.runStats.damageTaken).toLocaleString()}</span></div>
-            <div class="stat-row"><span>XP Collected:</span><span>${Math.round(this.runStats.xpCollected).toLocaleString()}</span></div>
-            <div class="stat-row"><span>Power-ups:</span><span>${this.runStats.powerUpsCollected}</span></div>
-            <div class="stat-row"><span>Bosses Killed:</span><span>${this.runStats.bossesKilled}</span></div>
-            <div class="stat-row"><span>Elites Killed:</span><span>${this.runStats.elitesKilled}</span></div>
-            <div class="stat-row"><span>Max Kill Streak:</span><span>${this.runStats.maxKillStreak}</span></div>
+        <div class="run-stats-container visible">
+            <button class="stats-close-btn" onclick="game.hideRunStats()">✕</button>
+            <h3>📊 Run Stats</h3>
+            <div class="run-stats-content">
+                <div class="stat-row"><span>Damage Dealt</span><span>${Math.round(this.runStats.damageDealt).toLocaleString()}</span></div>
+                <div class="stat-row"><span>Damage Taken</span><span>${Math.round(this.runStats.damageTaken).toLocaleString()}</span></div>
+                <div class="stat-row"><span>XP Collected</span><span>${Math.round(this.runStats.xpCollected).toLocaleString()}</span></div>
+                <div class="stat-row"><span>Power-ups</span><span>${this.runStats.powerUpsCollected}</span></div>
+                <div class="stat-row"><span>Bosses Killed</span><span>${this.runStats.bossesKilled}</span></div>
+                <div class="stat-row"><span>Elites Killed</span><span>${this.runStats.elitesKilled}</span></div>
+                <div class="stat-row"><span>Max Kill Streak</span><span>${this.runStats.maxKillStreak}</span></div>
+            </div>
         </div>
     `;
-    
     const statsContainer = document.getElementById('runStatsContainer');
     if (statsContainer) {
         statsContainer.innerHTML = statsHtml;
+    }
+};
+
+game.hideRunStats = function() {
+    const statsContainer = document.getElementById('runStatsContainer');
+    if (statsContainer) {
+        statsContainer.innerHTML = '';
     }
 };
 
