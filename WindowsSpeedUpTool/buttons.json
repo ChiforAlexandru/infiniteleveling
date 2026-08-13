@@ -1,0 +1,123 @@
+{
+  "title": "Windows Speed Up Tool",
+  "buttons": [
+    {
+      "name": "Task Manager",
+      "type": "menu",
+      "file": "taskmgr.exe"
+    },
+    {
+      "name": "Services",
+      "type": "menu",
+      "file": "services.msc"
+    },
+    {
+      "name": "Device Manager",
+      "type": "menu",
+      "file": "devmgmt.msc"
+    },
+    {
+      "name": "Performance Monitor",
+      "type": "menu",
+      "file": "perfmon.exe"
+    },
+    {
+      "name": "Resource Monitor",
+      "type": "menu",
+      "file": "resmon.exe"
+    },
+    {
+      "name": "Event Viewer",
+      "type": "menu",
+      "file": "eventvwr.msc"
+    },
+    {
+      "name": "Disk Cleanup",
+      "type": "menu",
+      "file": "cleanmgr.exe"
+    },
+    {
+      "name": "System Configuration",
+      "type": "menu",
+      "file": "msconfig.exe"
+    },
+    {
+      "name": "Power Options",
+      "type": "menu",
+      "file": "control.exe",
+      "arguments": "/name Microsoft.PowerOptions"
+    },
+    {
+      "name": "Power & Sleep",
+      "type": "menu",
+      "file": "ms-settings:powersleep"
+    },
+    {
+      "name": "Startup Apps",
+      "type": "menu",
+      "file": "ms-settings:startupapps"
+    },
+    {
+      "name": "Startup Folder",
+      "type": "menu",
+      "file": "shell:startup"
+    },
+    {
+      "name": "Windows Security",
+      "type": "menu",
+      "file": "windowsdefender:"
+    },
+    {
+      "name": "Windows Update",
+      "type": "menu",
+      "file": "ms-settings:windowsupdate"
+    },
+    {
+      "name": "Advanced Recovery",
+      "type": "menu",
+      "file": "ms-settings:recovery"
+    },
+    {
+      "name": "Network Connections",
+      "type": "menu",
+      "file": "ncpa.cpl"
+    },
+    {
+      "name": "Temp Folder",
+      "type": "menu",
+      "file": "shell:temp"
+    },
+    {
+      "name": "Restart Explorer",
+      "type": "command",
+      "command": "Stop-Process -Name explorer -Force; Start-Process explorer.exe"
+    },
+    {
+      "name": "Power Saver Mode",
+      "type": "command",
+      "command": "powercfg /setactive scheme_min",
+      "requiresAdmin": true
+    },
+    {
+      "name": "Disable Hibernation",
+      "type": "command",
+      "command": "powercfg /h off",
+      "requiresAdmin": true
+    },
+    {
+      "name": "Clear Temp Folder",
+      "type": "command",
+      "command": "$tempPath = [System.IO.Path]::GetTempPath(); Remove-Item -Path (Join-Path $tempPath '*') -Recurse -Force -ErrorAction SilentlyContinue; Write-Host 'Temporary files cleaned.'"
+    },
+    {
+      "name": "Show Hidden Files",
+      "type": "command",
+      "command": "Set-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced' -Name Hidden -Value 1; Stop-Process -ProcessName explorer -Force; Start-Process explorer.exe"
+    },
+    {
+      "name": "Disable Startup Delay",
+      "type": "command",
+      "command": "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Serialize' -Name StartupDelayInMSec -Value 0 -ErrorAction SilentlyContinue; Stop-Process -ProcessName explorer -Force; Start-Process explorer.exe"
+    }
+  ]
+}

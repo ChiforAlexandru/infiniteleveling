@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apps | Infinite Leveling Studio</title>
+    <link rel="stylesheet" href="../assets/styles.css">
+    <style>
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+
+        .app-hero {
+            text-align: center;
+            padding: 48px 20px 24px;
+        }
+
+        .app-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            background: linear-gradient(90deg, #b97aff, #00ffcc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .app-hero p {
+            max-width: 700px;
+            margin: 0 auto;
+            color: #d7d7d7;
+            font-size: 1.08rem;
+        }
+
+        .app-card {
+            background: linear-gradient(160deg, #1a0e2c 0%, #12101a 100%);
+            border: 1px solid rgba(185, 122, 255, 0.35);
+            border-radius: 22px;
+            box-shadow: 0 12px 36px rgba(108,46,215,0.22);
+            padding: 32px;
+            margin-top: 28px;
+        }
+
+        .app-card h2 {
+            margin-top: 0;
+            font-size: 2rem;
+        }
+
+        .app-meta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin: 10px 0 22px;
+        }
+
+        .badge {
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(108,46,215,0.18);
+            border: 1px solid rgba(185, 122, 255, 0.5);
+            color: #e8d4ff;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 16px 30px;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #6c2ed7 0%, #b97aff 100%);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.05rem;
+            box-shadow: 0 12px 30px rgba(108,46,215,0.35);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 16px 36px rgba(185, 122, 255, 0.4);
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(220px, 1fr));
+            gap: 18px;
+            margin-top: 26px;
+        }
+
+        .feature-item {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 18px 18px 16px;
+        }
+
+        .feature-item h3 {
+            margin: 0 0 8px;
+            color: #d1aaff;
+            font-size: 1.05rem;
+        }
+
+        .feature-item p {
+            margin: 0;
+            color: #d4d4d4;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 720px) {
+            .feature-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <span class="logo-icon">&#9733;</span>
+            Infinite Leveling Studio
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html#home">Home</a></li>
+                <li><a href="../index.html#about">About</a></li>
+                <li><a href="../games/index.html">Games</a></li>
+                <li><a href="../shop/index.html">Shop</a></li>
+                <li><a href="index.html" class="active">Apps</a></li>
+                <li><a href="../index.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="app-hero">
+            <h1>Windows Performance Apps</h1>
+            <p>Fast-launch desktop tools for common Windows maintenance tasks, performance actions, and system utilities—so you can open the right menu or run the right command in a single click.</p>
+        </section>
+
+        <section class="app-card">
+            <h2>Windows Speed Up Tool</h2>
+            <div class="app-meta">
+                <span class="badge">PowerShell</span>
+                <span class="badge">One-click shortcuts</span>
+                <span class="badge">Windows optimization</span>
+            </div>
+
+            <p>This utility gives you a simple launcher with buttons for System Tools, cleanup actions, performance tweaks, and startup management. It is designed to save time when you need to open common Windows settings without digging through menus.</p>
+
+            <a class="download-btn" href="../WindowsSpeedUpTool.zip" download>Download Windows Speed Up Tool</a>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <h3>Open system tools instantly</h3>
+                    <p>Launch Task Manager, Services, Device Manager, Event Viewer, Startup Apps, and more from a single dashboard.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Run performance actions</h3>
+                    <p>Restart Explorer, clear temp files, switch to power saver mode, and manage common speed-focused actions with one click.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Safe for VM testing</h3>
+                    <p>Use the tool inside a Hyper-V VM to test actions before trying them on your main machine.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Easy to customize</h3>
+                    <p>The launcher reads a JSON config file, so you can add or remove buttons any time without altering the app logic.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
